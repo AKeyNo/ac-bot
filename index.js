@@ -8,25 +8,31 @@ client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 const cooldowns = new Discord.Collection();
 
+// puts every command into commandFiles
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
 	client.commands.set(command.name, command);
 }
 
+// shows in console when online and time
 client.once('ready', () => {
-	console.log('Ready!');
+	console.log('Isabelle arrived at Residential Services!');
+
+	var loginTime = new Date(Date.now());
+	console.log('She arrived at ' + loginTime.toString() + '.');
 });
 
-
+// handles messages
 client.on('message', message => {
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 
 	const args = message.content.slice(prefix.length).split(/ +/);
 	const commandName = args.shift().toLowerCase();
 
-	if (!client.commands.has(commandName)) return;
+	const command = client.commands.get(commandName)
+		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
-	const command = client.commands.get(commandName);
+	if (!command) return;
 
 	// allows commands to be set as guild/server only
 	if (command.guildOnly && message.channel.type !== 'text') {
@@ -80,4 +86,5 @@ client.on('message', message => {
 });
 
 // needed for it to function
+// token must be put inside config.json
 client.login(token);
