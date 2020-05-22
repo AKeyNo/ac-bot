@@ -13,7 +13,7 @@ module.exports = class CatCommand extends Command {
 				usages: 1,
 				duration: 10,
 			},
-			guildOnly: true,
+			guildOnly: false,
 		});
 	}
 
