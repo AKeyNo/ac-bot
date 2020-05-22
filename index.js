@@ -31,7 +31,5 @@ client.registry
         client.user.setActivity('!help for commands');
     });
 	
-	
-	
     client.on('error', console.error);
     client.login(token);
