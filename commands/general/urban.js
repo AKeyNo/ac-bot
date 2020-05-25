@@ -32,7 +32,7 @@ module.exports = class UrbanCommand extends Command {
 	async run(message, { word }) {
         const query = querystring.stringify({ term: word });
         const { list } = await fetch(`https://api.urbandictionary.com/v0/define?${query}`).then(response => response.json());
-        console.log(list);
+
         if (!list.length) {
             return message.channel.send(`No results found for **${args.join(' ')}**.`);
         }
@@ -45,8 +45,8 @@ module.exports = class UrbanCommand extends Command {
             .setURL(answer.permalink)
             .addFields(
                 { name: 'Definition', value: trim(answer.definition, 1024) },
-                //{ name: 'Example', value: trim(answer.example, 1024) },
-                //{ name: 'Rating', value: `${answer.thumbs_up} thumbs up. ${answer.thumbs_down} thumbs down.` }
+                { name: 'Example', value: trim(answer.example, 1024) },
+                { name: 'Rating', value: `${answer.thumbs_up} thumbs up. ${answer.thumbs_down} thumbs down.` }
             );
         
         message.channel.send(embed);

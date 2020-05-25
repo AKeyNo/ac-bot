@@ -1,6 +1,8 @@
 const { MessageEmbed } = require('discord.js');
 const { Command } = require('discord.js-commando');
 
+const wiki = require('wikijs');
+
 const fetch = require('node-fetch');
 const querystring = require('querystring');
 const trim = (str, max) => ((str.length > max) ? `${str.slice(0, max - 3)}...` : str);
@@ -30,14 +32,8 @@ module.exports = class WikiCommand extends Command {
 	}
 
 	async run(message, { word }) {
-        const query = querystring.stringify({ page: word });
-        const { list } = await fetch(`https://nookipedia.com/w/api.php?action=parse&${query}&format=json`).then(response => response.json());
 
-        if (!list.length) {
-            return message.channel.send(`No results found for **${args.join(' ')}**.`);
-        }
-
-        const [answer] = list;
+        new Wiki(search(word, 1))
 
 		const embed = new MessageEmbed()
             .setColor('#EFFF00')
