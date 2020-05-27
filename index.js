@@ -2,6 +2,7 @@ const Commando = require('discord.js-commando');
 const path = require('path');
 const { prefix, token } = require('./config.json');
 const sqlite = require('sqlite3').verbose();
+const chalk = require('chalk');
 
 const client = new Commando.Client({
     commandPrefix: prefix,
@@ -29,9 +30,9 @@ client.once('ready', () => {
     let catchDB = new sqlite.Database(`./databases/catchdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
     let fishDB = new sqlite.Database(`./databases/fishdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
 
-    console.log(`Logged in as ${client.user.tag}! (${client.user.id})
-                    \nIsabelle arrived at Residential Services!
-                    \nShe arrived at ${loginTime.toString()}.`);
+    console.log(`\nLogged in as ` + chalk.yellowBright(`${client.user.tag}`) + `! (${client.user.id})\n` +
+                    chalk.yellowBright(`Isabelle`) + ` arrived at Residential Services!\n` +
+                    `She arrived at ` + chalk.blue(`${loginTime.toString()}` + `.\n`));
     client.user.setActivity('!help for commands');
 
     randomizeGames();
@@ -44,14 +45,15 @@ client.on('guildCreate', (guild) => {
 
 // when a person joins
 client.on('guildMemberAdd', (member) => {
-    console.log(`${member.displayName} joined!`);
+    console.log(chalk.cyan(`${member.displayName}`) + ` joined!`);
 })
 
-// log messages for currently for testing purposes
+// logs commands for testing purposes
 client.on('message', (message) => {
-    console.log(`${message.author.username}: "${message}"`);
+    if(message.content.charAt(0) == `!`) {
+    console.log(chalk.cyan(`${message.author.username}`) + `: "${message}"`);
+    }
 })
-
 
 client.on('error', console.error);
 client.login(token);
@@ -69,8 +71,8 @@ function randomizeGames() {
 
     let countCatch = Math.floor(Math.random() * (max - min)) + min;
     let countFish = Math.floor(Math.random() * (max - min)) + min;
-    console.log(`Amount of available catches: ${countCatch}\n` +
-                `Amount of available fish: ${countFish}`);
+    console.log(`Types of bugs around: ` + chalk.green(`${countCatch}\n`) +
+                `Types of fish around: ` + chalk.green(`${countFish}`));
 
     // generates an array of random catches
     while (catchArr.length <= countCatch) {
