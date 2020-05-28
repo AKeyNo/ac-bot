@@ -1,3 +1,4 @@
+//test
 const Commando = require('discord.js-commando');
 const path = require('path');
 const { prefix, token } = require('./config.json');
