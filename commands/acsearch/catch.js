@@ -19,9 +19,12 @@ module.exports = class CatchCommand extends Command {
 
     run(message) {
         // initialize db
-        try { let catchDB = new sqlite.Database(`./databases/catchdb.db`, sqlite.OPEN_READWRITE); } 
-        catch (error) { console.log(error); }
-
+        let catchDB = new sqlite.Database(`./databases/catchdb.db`, sqlite.OPEN_READWRITE, (err) => {
+            if (err) {
+                return console.error(err.message);
+            }
+            // console.log('Catching database is present.');
+        });
         
     }
 }		

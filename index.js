@@ -4,12 +4,95 @@ const { prefix, token } = require('./config.json');
 const sqlite = require('sqlite3').verbose();
 const chalk = require('chalk');
 
+const allCatches = [
+    'Agrias Butterfly',
+    'Ant',
+    'Atlas Moth',
+    'Bagworm',
+    'Banded Dragonfly',
+    'Bell Cricket',
+    'Blue Weevil Beetle',
+    'Brown Cicada',
+    'Centipede',
+    'Cicada Shell',
+    'Citrus Longhorned Beetle',
+    'Common Bluebottle',
+    'Common Butterfly',
+    'Cricket',
+    'Cyclommatus Stag',
+    'Damselfly',
+    'Darner Dragonfly',
+    'Diving Beetle',
+    'Drone Beetle',
+    'Dung Beetle',
+    'Earthboring Dung Beetle',
+    'Emperor Butterfly',
+    'Evening Cicada',
+    'Firefly',
+    'Flea',
+    'Fly',
+    'Giant Cicada',
+    'Giant Stag',
+    'Giant Water Bug',
+    'Giraffe Stag',
+    'Golden Stag',
+    'Goliath Beetle',
+    'Grasshopper',
+    'Great Purple Emperor',
+    'Hermit Crab',
+    'Honeybee',
+    'Horned Atlas',
+    'Horned Dynastid',
+    'Horned Elephant',
+    'Horned Herucles',
+    'Jewel Beetle',
+    'Ladybug',
+    'Long Locust',
+    'Madagascan SunsetMoth',
+    'Manfaced Stink Bug',
+    'Mantis',
+    'Migratory Locust',
+    'Miyama Stag',
+    'Mole Cricket',
+    'Monarch Butterfly',
+    'Mosquito',
+    'Moth',
+    'Orchid Mantis',
+    'Paper Kite Butterfly',
+    'Peacock Butterfly',
+    'Pill Bug',
+    'Pondskater',
+    'Queen Alexandras Birdwing',
+    'Rainbow Stag',
+    'RajaBrookes Birdwing',
+    'Red Dragonfly',
+    'Rice Grasshopper',
+    'Robust Cicada',
+    'Rosalia Batesi Beetle',
+    'Saw Stag',
+    'Scarab Beetle',
+    'Scorpion',
+    'Snail',
+    'Spider',
+    'Stinkbug',
+    'Tarantula',
+    'Tiger Beetle',
+    'Tiger Butterfly',
+    'Violin Beetle',
+    'Walker Cicada',
+    'Walking Leaf',
+    'Walking Stick',
+    'Wasp',
+    'Wharf Roach',
+    'Yellow Butterfly',
+];
+
 const client = new Commando.Client({
     commandPrefix: prefix,
     owner: '189985219451944960',
     disableEveryone: true,
-    unknownCommandResponse: true,
-    // invite: '',
+    unknownCommandResponse: false,
+    invite: 'https://discord.com/invite/Uc2JGUB',
 });
 
 client.registry
@@ -26,14 +109,31 @@ client.registry
 
 client.once('ready', () => {
     var loginTime = new Date(Date.now());
-    let claimDB = new sqlite.Database('./databases/claimdb.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
-    let catchDB = new sqlite.Database(`./databases/catchdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
-    let fishDB = new sqlite.Database(`./databases/fishdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
-
     console.log(`\nLogged in as ` + chalk.yellowBright(`${client.user.tag}`) + `! (${client.user.id})\n` +
-                    chalk.yellowBright(`Isabelle`) + ` arrived at Residential Services!\n` +
-                    `She arrived at ` + chalk.blue(`${loginTime.toString()}` + `.\n`));
+        chalk.yellowBright(`Isabelle`) + ` arrived at Residential Services!\n` +
+        `She arrived at ` + chalk.blue(`${loginTime.toString()}` + `.\n`));
     client.user.setActivity('!help for commands');
+
+    let claimDB = new sqlite.Database('./databases/claimdb.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE, (err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log('Claim database is present.');
+    });
+
+    let catchDB = new sqlite.Database(`./databases/catchdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE, (err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log('Catching database is present.');
+    });
+
+    let fishDB = new sqlite.Database(`./databases/fishdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE, (err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log('Fishing database is present.');
+    });
 
     randomizeGames();
 });
@@ -50,8 +150,8 @@ client.on('guildMemberAdd', (member) => {
 
 // logs commands for testing purposes
 client.on('message', (message) => {
-    if(message.content.charAt(0) == `!`) {
-    console.log(chalk.cyan(`${message.author.username}`) + `: "${message}"`);
+    if (message.content.charAt(0) == `!`) {
+        console.log(chalk.cyan(`${message.author.username}`) + `: "${message}"`);
     }
 })
 
@@ -59,8 +159,8 @@ client.on('error', console.error);
 client.login(token);
 
 
+// randomizes catches and fish
 function randomizeGames() {
-    let catchDB = new sqlite.Database(`./databases/catchdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
     let fishDB = new sqlite.Database(`./databases/fishdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
     let catchArr = [];
     let fishArr = [];
@@ -72,38 +172,68 @@ function randomizeGames() {
     let countCatch = Math.floor(Math.random() * (max - min)) + min;
     let countFish = Math.floor(Math.random() * (max - min)) + min;
     console.log(`Types of bugs around: ` + chalk.green(`${countCatch}\n`) +
-                `Types of fish around: ` + chalk.green(`${countFish}`));
+        `Types of fish around: ` + chalk.green(`${countFish}`));
 
     // generates an array of random catches
-    while (catchArr.length <= countCatch) {
+    while (catchArr.length < countCatch) {
         // generates a random number from 0 - 81
         let randomNum = Math.floor(Math.random() * 81);
 
         // checks to see if its in the array, and adds or rolls again
-        if (catchArr.indexOf(randomNum) < 0) {
-            catchArr.push(randomNum);
+        if (catchArr.indexOf(allCatches[randomNum]) < 0) {
+            catchArr.push(allCatches[randomNum]);
         }
     }
 
-    // generates an array of random fish
-    while (fishArr.length <= countFish) {
+    let catchDB = new sqlite.Database(`./databases/catchdb.db`, sqlite.OPEN_READWRITE, (err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log('Catching database is present.');
+    });
+
+    for (var x = 0; x < catchArr.length; x ++) {
+        catchDB.run(`UPDATE current SET '${catchArr[x]}' = ? WHERE stat = ?`, [1, 0]);
+        console.log(catchArr[x]);
+        // generates an array of random fish
+    }
+
+    while (fishArr.length < countFish) {
         // generates a random number from 0 - 81
         let randomNum = Math.floor(Math.random() * 81);
 
         // checks to see if its in the array, and adds or rolls again
         if (fishArr.indexOf(randomNum) < 0) {
-            fishArr.push(randomNum);
+            fishArr.push(randomNum); //******* */
         }
-
     }
+
+    console.log(catchArr);
+    console.log(fishArr);
 };
 
+// sets up databases for each guild/server upon entering
 function setGuildDBs(guild) {
-    let claimDB = new sqlite.Database(`./databases/claimdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
-    let catchDB = new sqlite.Database(`./database/catchdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
-    let fishDB = new sqlite.Database(`./database/fishdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
+    let claimDB = new sqlite.Database('./databases/claimdb.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE, (err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log('Claim database is present.');
+    });
 
-    // insert claimDB and fishDB
+    claimDB.close((err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log('Closed the claim database connection.');
+    });
+
+    let catchDB = new sqlite.Database(`./databases/catchdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE, (err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log('Catching database is present.');
+    });
 
     catchDB.run(`CREATE TABLE IF NOT EXISTS server${guild.id}(
         "userID"	INTEGER NOT NULL UNIQUE,
@@ -128,7 +258,7 @@ function setGuildDBs(guild) {
         "Diving Beetle"	INTEGER NOT NULL DEFAULT 0,
         "Drone Beetle"	INTEGER NOT NULL DEFAULT 0,
         "Dung Beetle"	INTEGER NOT NULL DEFAULT 0,
-        "Earthboring DungBeetle"	INTEGER NOT NULL DEFAULT 0,
+        "Earthboring Dung Beetle"	INTEGER NOT NULL DEFAULT 0,
         "Emperor Butterfly"	INTEGER NOT NULL DEFAULT 0,
         "Evening Cicada"	INTEGER NOT NULL DEFAULT 0,
         "Firefly"	INTEGER NOT NULL DEFAULT 0,
@@ -190,4 +320,27 @@ function setGuildDBs(guild) {
         "Yellow Butterfly"	INTEGER NOT NULL DEFAULT 0,
         PRIMARY KEY("userID")
     )`);
+
+    catchDB.close((err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log('Closed the catch database connection.');
+    });
+
+    // fish
+
+    let fishDB = new sqlite.Database(`./databases/fishdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE, (err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log('Fishing database is present.');
+    });
+
+    fishDB.close((err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log('Closed the fish database connection.');
+    });
 }

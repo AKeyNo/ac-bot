@@ -18,10 +18,27 @@ module.exports = class TunesCommand extends Command {
     }
 
     run(message, args) {
-		let claimDB = new sqlite.Database(`./databases/claimdb.db`, sqlite.OPEN_READWRITE  | sqlite.OPEN_CREATE);
-        let catchDB = new sqlite.Database(`./databases/catchdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
-        let fishDB = new sqlite.Database(`./databases/fishdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
-
+		let claimDB = new sqlite.Database('./databases/claimdb.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE, (err) => {
+			if (err) {
+				return console.error(err.message);
+			}
+			console.log('Claim database is present.');
+		});
+	
+		claimDB.close((err) => {
+			if (err) {
+			  return console.error(err.message);
+			}
+			console.log('Closed the claim database connection.');
+		  });
+	
+		let catchDB = new sqlite.Database(`./databases/catchdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE, (err) => {
+			if (err) {
+				return console.error(err.message);
+			}
+			console.log('Catching database is present.');
+		});
+	
 		catchDB.run(`CREATE TABLE IF NOT EXISTS server${message.guild.id}(
 			"userID"	INTEGER NOT NULL UNIQUE,
 			"lastTime"	INTEGER,
@@ -45,7 +62,7 @@ module.exports = class TunesCommand extends Command {
 			"Diving Beetle"	INTEGER NOT NULL DEFAULT 0,
 			"Drone Beetle"	INTEGER NOT NULL DEFAULT 0,
 			"Dung Beetle"	INTEGER NOT NULL DEFAULT 0,
-			"Earthboring DungBeetle"	INTEGER NOT NULL DEFAULT 0,
+			"Earthboring Dung Beetle"	INTEGER NOT NULL DEFAULT 0,
 			"Emperor Butterfly"	INTEGER NOT NULL DEFAULT 0,
 			"Evening Cicada"	INTEGER NOT NULL DEFAULT 0,
 			"Firefly"	INTEGER NOT NULL DEFAULT 0,
@@ -107,6 +124,29 @@ module.exports = class TunesCommand extends Command {
 			"Yellow Butterfly"	INTEGER NOT NULL DEFAULT 0,
 			PRIMARY KEY("userID")
 		)`);
+	
+		catchDB.close((err) => {
+			if (err) {
+			  return console.error(err.message);
+			}
+			console.log('Closed the catch database connection.');
+		  });
+	
+		  // fish
+	
+		let fishDB = new sqlite.Database(`./databases/fishdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE, (err) => {
+			if (err) {
+				return console.error(err.message);
+			}
+			console.log('Fishing database is present.');
+		});
+	
+		fishDB.close((err) => {
+			if (err) {
+			  return console.error(err.message);
+			}
+			console.log('Closed the fish database connection.');
+		  });
 
 		/*let userid = message.author.id;
 		let claimDB = new sqlite.Database(`././test.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
