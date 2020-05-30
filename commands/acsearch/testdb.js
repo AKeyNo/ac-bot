@@ -40,8 +40,8 @@ module.exports = class TunesCommand extends Command {
 		});
 	
 		catchDB.run(`CREATE TABLE IF NOT EXISTS server${message.guild.id}(
-			"userID"	INTEGER NOT NULL UNIQUE,
-			"lastTime"	INTEGER,
+			"userID"	INTEGER NOT NULL DEFAULT 0 UNIQUE,
+			"lastTime"	INTEGER INTEGER NOT NULL DEFAULT 0,
 			"Agrias Butterfly"	INTEGER NOT NULL DEFAULT 0,
 			"Ant"	INTEGER NOT NULL DEFAULT 0,
 			"Atlas Moth"	INTEGER NOT NULL DEFAULT 0,

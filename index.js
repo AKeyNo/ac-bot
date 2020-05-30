@@ -1,4 +1,3 @@
-//test
 const Commando = require('discord.js-commando');
 const path = require('path');
 const { prefix, token } = require('./config.json');
@@ -115,7 +114,7 @@ client.once('ready', () => {
         `She arrived at ` + chalk.blue(`${loginTime.toString()}` + `.\n`));
     client.user.setActivity('!help for commands');
 
-    let claimDB = new sqlite.Database('./databases/claimdb.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE, (err) => {
+    /*let claimDB = new sqlite.Database('./databases/claimdb.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE, (err) => {
         if (err) {
             return console.error(err.message);
         }
@@ -134,7 +133,7 @@ client.once('ready', () => {
             return console.error(err.message);
         }
         console.log('Fishing database is present.');
-    });
+    });*/
 
     randomizeGames();
 });
@@ -183,6 +182,7 @@ function randomizeGames() {
         // checks to see if its in the array, and adds or rolls again
         if (catchArr.indexOf(allCatches[randomNum]) < 0) {
             catchArr.push(allCatches[randomNum]);
+            console.log(randomNum);
         }
     }
 
@@ -193,11 +193,33 @@ function randomizeGames() {
         console.log('Catching database is present.');
     });
 
-    for (var x = 0; x < catchArr.length; x ++) {
-        catchDB.run(`UPDATE current SET '${catchArr[x]}' = ? WHERE stat = ?`, [1, 0]);
-        console.log(catchArr[x]);
-        // generates an array of random fish
-    }
+    // first delete the current row, insert a blank row, then update the values for current catches
+    catchDB.serialize(() => {
+        catchDB.run(`DELETE FROM current WHERE stat = ?`, 0, function (err) {
+            if (err) {
+                return console.error(err.message);
+            }
+            console.log(`Current cleared.`);
+        });
+        catchDB.run(`INSERT INTO current DEFAULT VALUES`, function (err) {
+            if (err) {
+                return console.log(err.message + `insert error`);
+            }
+            console.log('Inserted a new row into current.');
+        });
+        for (var x = 0; x < catchArr.length; x++) {
+            catchDB.run(`UPDATE current SET '${catchArr[x]}' = ? WHERE stat = ?`, [1, 0]);
+            console.log(catchArr[x]);
+        }
+    });
+
+    // close the catch database
+    catchDB.close((err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log('Closed the claim database connection.');
+    });
 
     while (fishArr.length < countFish) {
         // generates a random number from 0 - 81
@@ -237,8 +259,8 @@ function setGuildDBs(guild) {
     });
 
     catchDB.run(`CREATE TABLE IF NOT EXISTS server${guild.id}(
-        "userID"	INTEGER NOT NULL UNIQUE,
-        "lastTime"	INTEGER,
+        "userID"	INTEGER NOT NULL DEFAULT 0 UNIQUE,
+        "lastTime"	INTEGER INTEGER NOT NULL DEFAULT 0,
         "Agrias Butterfly"	INTEGER NOT NULL DEFAULT 0,
         "Ant"	INTEGER NOT NULL DEFAULT 0,
         "Atlas Moth"	INTEGER NOT NULL DEFAULT 0,
