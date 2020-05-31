@@ -177,7 +177,7 @@ function randomizeGames() {
     // generates an array of random catches
     while (catchArr.length < countCatch) {
         // generates a random number from 0 - 81
-        let randomNum = Math.floor(Math.random() * 81);
+        let randomNum = Math.floor(Math.random() * 80);
 
         // checks to see if its in the array, and adds or rolls again
         if (catchArr.indexOf(allCatches[randomNum]) < 0) {
@@ -259,7 +259,7 @@ function setGuildDBs(guild) {
     });
 
     catchDB.run(`CREATE TABLE IF NOT EXISTS server${guild.id}(
-        "userID"	INTEGER NOT NULL DEFAULT 0 UNIQUE,
+        "userID"	INTEGER DEFAULT 0,
         "lastTime"	INTEGER INTEGER NOT NULL DEFAULT 0,
         "Agrias Butterfly"	INTEGER NOT NULL DEFAULT 0,
         "Ant"	INTEGER NOT NULL DEFAULT 0,
