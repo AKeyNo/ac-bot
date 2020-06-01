@@ -4,6 +4,9 @@ const { prefix, token } = require('./config.json');
 const sqlite = require('sqlite3').verbose();
 const chalk = require('chalk');
 
+// amount of minutes before the tables get randomized;
+const RANDOMIZERTIMER = 60;
+// list of call possible catches in an array
 const allCatches = [
     'Agrias Butterfly',
     'Ant',
@@ -92,7 +95,7 @@ const client = new Commando.Client({
     owner: '189985219451944960',
     disableEveryone: true,
     unknownCommandResponse: false,
-    invite: 'https://discord.com/invite/Uc2JGUB',
+    invite: 'https://discord.gg/tr9FGh',
 });
 
 client.registry
@@ -113,30 +116,13 @@ client.once('ready', () => {
         chalk.yellowBright(`Isabelle`) + ` arrived at Residential Services!\n` +
         `She arrived at ` + chalk.blue(`${loginTime.toString()}` + `.\n`));
     client.user.setActivity('!help for commands');
-
-    /*let claimDB = new sqlite.Database('./databases/claimdb.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE, (err) => {
-        if (err) {
-            return console.error(err.message);
-        }
-        console.log('Claim database is present.');
-    });
-
-    let catchDB = new sqlite.Database(`./databases/catchdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE, (err) => {
-        if (err) {
-            return console.error(err.message);
-        }
-        console.log('Catching database is present.');
-    });
-
-    let fishDB = new sqlite.Database(`./databases/fishdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE, (err) => {
-        if (err) {
-            return console.error(err.message);
-        }
-        console.log('Fishing database is present.');
-    });*/
-
-    randomizeGames();
 });
+
+// randomizes the tables after every hour
+client.setInterval(function () {
+    console.log(chalk.magenta('\nGames have been randomized'));
+    randomizeGames();
+}, RANDOMIZERTIMER * 60000);
 
 // when the bot joins a guild or server
 client.on('guildCreate', (guild) => {
@@ -190,7 +176,7 @@ function randomizeGames() {
         if (err) {
             return console.error(err.message);
         }
-        console.log('Catching database is present.');
+        console.log(chalk.greenBright('Catching database is present.'));
     });
 
     // first delete the current row, insert a blank row, then update the values for current catches
@@ -218,7 +204,7 @@ function randomizeGames() {
         if (err) {
             return console.error(err.message);
         }
-        console.log('Closed the claim database connection.');
+        console.log(chalk.redBright('Closed the claim database connection.'));
     });
 
     while (fishArr.length < countFish) {
@@ -235,7 +221,7 @@ function randomizeGames() {
     console.log(fishArr);
 };
 
-// sets up databases for each guild/server upon entering
+// sets up databases for each guild/server upon entering, MOVE THIS TO ITS OWN JS FILE TO BE RUN ONCE
 function setGuildDBs(guild) {
     let claimDB = new sqlite.Database('./databases/claimdb.db', sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE, (err) => {
         if (err) {
@@ -304,7 +290,7 @@ function setGuildDBs(guild) {
         "Jewel Beetle"	INTEGER NOT NULL DEFAULT 0,
         "Ladybug"	INTEGER NOT NULL DEFAULT 0,
         "Long Locust"	INTEGER NOT NULL DEFAULT 0,
-        "Madagascan SunsetMoth"	INTEGER NOT NULL DEFAULT 0,
+        "Madagascan Sunset Moth"	INTEGER NOT NULL DEFAULT 0,
         "Manfaced Stink Bug"	INTEGER NOT NULL DEFAULT 0,
         "Mantis"	INTEGER NOT NULL DEFAULT 0,
         "Migratory Locust"	INTEGER NOT NULL DEFAULT 0,

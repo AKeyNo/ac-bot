@@ -85,7 +85,7 @@ module.exports = class TunesCommand extends Command {
 			"Jewel Beetle"	INTEGER NOT NULL DEFAULT 0,
 			"Ladybug"	INTEGER NOT NULL DEFAULT 0,
 			"Long Locust"	INTEGER NOT NULL DEFAULT 0,
-			"Madagascan SunsetMoth"	INTEGER NOT NULL DEFAULT 0,
+			"Madagascan Sunset Moth"	INTEGER NOT NULL DEFAULT 0,
 			"Manfaced Stink Bug"	INTEGER NOT NULL DEFAULT 0,
 			"Mantis"	INTEGER NOT NULL DEFAULT 0,
 			"Migratory Locust"	INTEGER NOT NULL DEFAULT 0,
