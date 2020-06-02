@@ -81,7 +81,7 @@ module.exports = class TunesCommand extends Command {
 			"Horned Atlas"	INTEGER NOT NULL DEFAULT 0,
 			"Horned Dynastid"	INTEGER NOT NULL DEFAULT 0,
 			"Horned Elephant"	INTEGER NOT NULL DEFAULT 0,
-			"Horned Herucles"	INTEGER NOT NULL DEFAULT 0,
+			"Horned Hercules"	INTEGER NOT NULL DEFAULT 0,
 			"Jewel Beetle"	INTEGER NOT NULL DEFAULT 0,
 			"Ladybug"	INTEGER NOT NULL DEFAULT 0,
 			"Long Locust"	INTEGER NOT NULL DEFAULT 0,
