@@ -4,7 +4,8 @@ const sqlite = require('sqlite3').verbose();
 
 // 1 hour since last catch
 const TIMEINTERVAL = 3600000;
-
+// how much time the user has to react
+const COLLECTIONTIME = 10000;
 module.exports = class CatchCommand extends Command {
     constructor(client) {
         super(client, {
@@ -71,14 +72,72 @@ module.exports = class CatchCommand extends Command {
 
                 // spawns a message with a reacting emoji that lasts 15 seconds, first 5 seconds can only be grabbed by the person who spawned
                 // after anyone can try to catch for 10 seconds
-                
+
+                bugCatching(message, catchDB);
             })
         })
     }
 }
 
-function bugCatching(db) {
-    
+function bugCatching(message, db) {
+    console.log(message.author.id);
+    const baseEmbed = new Discord.MessageEmbed()
+        .setColor('BLUE')
+        .setImage('https://dodo.ac/np/images/thumb/e/ec/Monarch_Butterfly_NH.png/180px-Monarch_Butterfly_NH.png')
+        ;
+
+    const capturedEmbed = new Discord.MessageEmbed()
+        .setColor('GREEN')
+        .setTitle('CAUGHT')
+        .setImage('https://dodo.ac/np/images/thumb/e/ec/Monarch_Butterfly_NH.png/180px-Monarch_Butterfly_NH.png')
+        .setFooter(`${message.author.username} caught it!`)
+        ;
+
+    const escapedEmbed = new Discord.MessageEmbed()
+        .setColor('RED')
+        .setImage('https://dodo.ac/np/images/thumb/e/ec/Monarch_Butterfly_NH.png/180px-Monarch_Butterfly_NH.png')
+        .setFooter('*It flew away...*')
+        ;
+
+    const filter = (reaction, user) => {
+        return reaction.emoji.name === '⭐' && user.id === message.author.id;
+    };
+
+    message.channel.send(baseEmbed).then(sentEmbed => {
+        // flag for the original user
+        let authorFlag = false;
+
+        sentEmbed.react('⭐');
+
+        const collector = sentEmbed.createReactionCollector(filter, { time: COLLECTIONTIME });
+
+        collector.on('collect', (reaction, user) => {
+            console.log(`Collected ${reaction.emoji.name} from ${user.tag}`);
+
+            if (user.id = message.author.id) {
+                authorFlag = true;
+
+                try {
+                    collector.stop();
+                    sentEmbed.edit(capturedEmbed);
+                }
+                catch (error) { console.error(error); }
+            }
+        })
+
+        collector.on('end', collected => {
+            sentEmbed.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
+
+            if (authorFlag) {
+                console.log(`${message.author.id} reacted to this message.`)
+            }
+            else {
+                try { sentEmbed.edit(escapedEmbed); }
+                catch (error) { console.error(error); }
+            }
+            console.log(`Collected ${collected.size} items`);
+        });
+    });
 };
 
 function msToMinutesSeconds(millis) {
