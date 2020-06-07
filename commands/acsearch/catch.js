@@ -30,6 +30,13 @@ module.exports = class CatchCommand extends Command {
             // console.log('Catching database is present.');
         });
 
+        let infoDB = new sqlite.Database(`./databases/info.db`, sqlite.OPEN_READWRITE, (err) => {
+            if (err) {
+                return console.error(err.message);
+            }
+            // console.log('Info database is present.');
+        });
+
         // check to see if the user is in the database, if not create them, else
         catchDB.serialize(() => {
             catchDB.get(`SELECT userID FROM server${message.guild.id} WHERE userID = ?`, [message.author.id], (err, row) => {
@@ -72,15 +79,27 @@ module.exports = class CatchCommand extends Command {
 
                 // spawns a message with a reacting emoji that lasts 15 seconds, first 5 seconds can only be grabbed by the person who spawned
                 // after anyone can try to catch for 10 seconds
+                infoDB.get(`SELECT name FROM bugs WHERE status = 1 ORDER BY RANDOM() LIMIT 1`, [], (err, row) => {
+                    if (err) {
+                        return console.error(err);
+                    }
 
-                bugCatching(message, catchDB);
+                    if (row === undefined) {
+                        console.log(`Something went wrong.`);
+                    }
+                    else {
+                        console.log(row.name);
+                        bugCatching(message, catchDB, row.name);
+                    }
+                })
             })
-        })
-    }
+        }) // end serialize
+    } // end run
 }
 
-function bugCatching(message, db) {
+function bugCatching(message, catchDB, bugName) {
     console.log(message.author.id);
+
     const baseEmbed = new Discord.MessageEmbed()
         .setColor('BLUE')
         .setImage('https://dodo.ac/np/images/thumb/e/ec/Monarch_Butterfly_NH.png/180px-Monarch_Butterfly_NH.png')
@@ -90,7 +109,7 @@ function bugCatching(message, db) {
         .setColor('GREEN')
         .setTitle('CAUGHT')
         .setImage('https://dodo.ac/np/images/thumb/e/ec/Monarch_Butterfly_NH.png/180px-Monarch_Butterfly_NH.png')
-        .setFooter(`${message.author.username} caught it!`)
+        .setFooter(`${message.author.username} caught a ${bugName.toLowerCase()}!`)
         ;
 
     const escapedEmbed = new Discord.MessageEmbed()
@@ -130,12 +149,17 @@ function bugCatching(message, db) {
 
             if (authorFlag) {
                 console.log(`${message.author.id} reacted to this message.`)
+
+                catchDB.run(`UPDATE server${message.guild.id} SET '${bugName}' = '${bugName}' + 1 WHERE userID = ?`, [message.author.id], function (err) {
+                    if (err) {
+                        return console.error(err);
+                    }
+                });
             }
             else {
                 try { sentEmbed.edit(escapedEmbed); }
                 catch (error) { console.error(error); }
             }
-            console.log(`Collected ${collected.size} items`);
         });
     });
 };
