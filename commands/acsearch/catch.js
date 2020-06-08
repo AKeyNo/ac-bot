@@ -79,7 +79,7 @@ module.exports = class CatchCommand extends Command {
 
                 // spawns a message with a reacting emoji that lasts 15 seconds, first 5 seconds can only be grabbed by the person who spawned
                 // after anyone can try to catch for 10 seconds
-                infoDB.get(`SELECT name FROM bugs WHERE status = 1 ORDER BY RANDOM() LIMIT 1`, [], (err, row) => {
+                infoDB.get(`SELECT name, image FROM bugs WHERE status = 1 ORDER BY RANDOM() LIMIT 1`, [], (err, row) => {
                     if (err) {
                         return console.error(err);
                     }
@@ -89,7 +89,7 @@ module.exports = class CatchCommand extends Command {
                     }
                     else {
                         console.log(row.name);
-                        bugCatching(message, catchDB, row.name);
+                        bugCatching(message, catchDB, row.name, row.image);
                     }
                 })
             })
@@ -97,25 +97,25 @@ module.exports = class CatchCommand extends Command {
     } // end run
 }
 
-function bugCatching(message, catchDB, bugName) {
+function bugCatching(message, catchDB, bugName, bugImage) {
     console.log(message.author.id);
 
     const baseEmbed = new Discord.MessageEmbed()
         .setColor('BLUE')
-        .setImage('https://dodo.ac/np/images/thumb/e/ec/Monarch_Butterfly_NH.png/180px-Monarch_Butterfly_NH.png')
+        .setImage(bugImage)
         ;
 
     const capturedEmbed = new Discord.MessageEmbed()
         .setColor('GREEN')
         .setTitle('CAUGHT')
-        .setImage('https://dodo.ac/np/images/thumb/e/ec/Monarch_Butterfly_NH.png/180px-Monarch_Butterfly_NH.png')
-        .setFooter(`${message.author.username} caught a ${bugName.toLowerCase()}!`)
+        .setImage(bugImage)
+        .setFooter(`${message.author.username} caught a(n) ${bugName.toLowerCase()}!`)
         ;
 
     const escapedEmbed = new Discord.MessageEmbed()
         .setColor('RED')
-        .setImage('https://dodo.ac/np/images/thumb/e/ec/Monarch_Butterfly_NH.png/180px-Monarch_Butterfly_NH.png')
-        .setFooter('*It flew away...*')
+        .setImage(bugImage)
+        .setFooter('*It ran away...*')
         ;
 
     const filter = (reaction, user) => {
@@ -139,6 +139,7 @@ function bugCatching(message, catchDB, bugName) {
                 try {
                     collector.stop();
                     sentEmbed.edit(capturedEmbed);
+                    console.log(`${message.author.tag} (${message.author.id}) caught a ${bugName} in server${message.guild.id}!.`);
                 }
                 catch (error) { console.error(error); }
             }
@@ -148,7 +149,7 @@ function bugCatching(message, catchDB, bugName) {
             sentEmbed.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
 
             if (authorFlag) {
-                console.log(`${message.author.id} reacted to this message.`)
+                //console.log(`${message.author.id} reacted to this message.`)
 
                 catchDB.run(`UPDATE server${message.guild.id} SET '${bugName}' = '${bugName}' + 1 WHERE userID = ?`, [message.author.id], function (err) {
                     if (err) {
