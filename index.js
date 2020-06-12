@@ -4,6 +4,8 @@ const { prefix, token } = require('./config.json');
 const sqlite = require('sqlite3').verbose();
 const chalk = require('chalk');
 
+const mysql = require('mysql');
+
 // amount of minutes before the tables get randomized;
 const RANDOMIZERTIMER = 60;
 // list of call possible catches in an array
@@ -47,11 +49,11 @@ const allCatches = [
     'Horned Atlas',
     'Horned Dynastid',
     'Horned Elephant',
-    'Horned Hercules',
+    'Horned Herucles',
     'Jewel Beetle',
     'Ladybug',
     'Long Locust',
-    'Madagascan Sunset Moth',
+    'Madagascan SunsetMoth',
     'Manfaced Stink Bug',
     'Mantis',
     'Migratory Locust',
@@ -89,6 +91,19 @@ const allCatches = [
     'Wharf Roach',
     'Yellow Butterfly',
 ];
+
+let con = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "acdb",
+});
+
+con.connect(err => {
+    if (err) throw err;
+    console.log("Connected to database.");
+    con.query(`SHOW TABLES`, console.log);
+});
 
 const client = new Commando.Client({
     commandPrefix: prefix,
@@ -147,6 +162,7 @@ client.login(token);
 
 // randomizes catches and fish
 function randomizeGames() {
+    let fishDB = new sqlite.Database(`./databases/fishdb.db`, sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE);
     let catchArr = [];
     let fishArr = [];
 
@@ -161,45 +177,54 @@ function randomizeGames() {
 
     // generates an array of random catches
     while (catchArr.length < countCatch) {
-        // generates a random number from 0 - 79 inclusive
+        // generates a random number from 0 - 81
         let randomNum = Math.floor(Math.random() * 80);
 
         // checks to see if its in the array, and adds or rolls again
         if (catchArr.indexOf(allCatches[randomNum]) < 0) {
             catchArr.push(allCatches[randomNum]);
-            //console.log(randomNum);
+            console.log(randomNum);
         }
-        catchArr.sort();
     }
 
-    let infoDB = new sqlite.Database(`./databases/info.db`, sqlite.OPEN_READWRITE, (err) => {
+    let catchDB = new sqlite.Database(`./databases/catchdb.db`, sqlite.OPEN_READWRITE, (err) => {
         if (err) {
             return console.error(err.message);
         }
-        console.log(chalk.greenBright('Information database is present.'));
+        console.log(chalk.greenBright('Catching database is present.'));
     });
 
-    // resets status of all bugs, then updates bugs that are active
-    infoDB.serialize(() => {
-        infoDB.run(`UPDATE bugs SET status = ? WHERE status = ?`, [0, 1], function (err) {
+    // first delete the current row, insert a blank row, then update the values for current catches
+    catchDB.serialize(() => {
+        catchDB.run(`DELETE FROM current WHERE stat = ?`, 0, function (err) {
             if (err) {
                 return console.error(err.message);
             }
-        })
-
-        for (var y = 0; y < catchArr.length; y++) {
-            infoDB.run(`UPDATE bugs SET status = ? WHERE name = ?`, [1, catchArr[y]], function (err) {
-                if (err) {
-                    return console.error(err.message);
-                }
-            });
-            // console.log(`${catchArr[y]} is now active.`);
+            console.log(`Current cleared.`);
+        });
+        catchDB.run(`INSERT INTO current DEFAULT VALUES`, function (err) {
+            if (err) {
+                return console.log(err.message + `insert error`);
+            }
+            console.log('Inserted a new row into current.');
+        });
+        for (var x = 0; x < catchArr.length; x++) {
+            catchDB.run(`UPDATE current SET '${catchArr[x]}' = ? WHERE stat = ?`, [1, 0]);
+            console.log(catchArr[x]);
         }
     });
 
+    // close the catch database
+    catchDB.close((err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log(chalk.redBright('Closed the claim database connection.'));
+    });
+
     while (fishArr.length < countFish) {
-        // generates a random number from 0 - 79 inclusive
-        let randomNum = Math.floor(Math.random() * 80);
+        // generates a random number from 0 - 81
+        let randomNum = Math.floor(Math.random() * 81);
 
         // checks to see if its in the array, and adds or rolls again
         if (fishArr.indexOf(randomNum) < 0) {
@@ -207,16 +232,8 @@ function randomizeGames() {
         }
     }
 
-    // close the catch database
-    infoDB.close((err) => {
-        if (err) {
-            return console.error(err.message);
-        }
-        console.log(chalk.redBright('Closed the claim database connection.'));
-    });
-
     console.log(catchArr);
-    //console.log(fishArr);
+    console.log(fishArr);
 };
 
 // sets up databases for each guild/server upon entering, MOVE THIS TO ITS OWN JS FILE TO BE RUN ONCE
@@ -284,7 +301,7 @@ function setGuildDBs(guild) {
         "Horned Atlas"	INTEGER NOT NULL DEFAULT 0,
         "Horned Dynastid"	INTEGER NOT NULL DEFAULT 0,
         "Horned Elephant"	INTEGER NOT NULL DEFAULT 0,
-        "Horned Hercules"	INTEGER NOT NULL DEFAULT 0,
+        "Horned Herucles"	INTEGER NOT NULL DEFAULT 0,
         "Jewel Beetle"	INTEGER NOT NULL DEFAULT 0,
         "Ladybug"	INTEGER NOT NULL DEFAULT 0,
         "Long Locust"	INTEGER NOT NULL DEFAULT 0,

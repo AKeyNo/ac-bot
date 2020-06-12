@@ -4,8 +4,6 @@ const sqlite = require('sqlite3').verbose();
 
 // 1 hour since last catch
 const TIMEINTERVAL = 3600000;
-// how much time the user has to react
-const COLLECTIONTIME = 10000;
 
 module.exports = class CatchCommand extends Command {
     constructor(client) {
@@ -29,13 +27,6 @@ module.exports = class CatchCommand extends Command {
                 return console.error(err.message);
             }
             // console.log('Catching database is present.');
-        });
-
-        let infoDB = new sqlite.Database(`./databases/info.db`, sqlite.OPEN_READWRITE, (err) => {
-            if (err) {
-                return console.error(err.message);
-            }
-            // console.log('Info database is present.');
         });
 
         // check to see if the user is in the database, if not create them, else
@@ -73,115 +64,25 @@ module.exports = class CatchCommand extends Command {
                         let currentTime = new Date();
 
                         if ((row.lastTime + TIMEINTERVAL) > currentTime.getTime()) {
-                            return message.reply(`you can't look for bugs right now. You can look for them in ${msToMinutesSeconds((row.lastTime + TIMEINTERVAL) - currentTime.getTime())}`);
-                        }
-                        else {
-                            bugCatching(message, catchDB, infoDB);
+                            return message.say(`You can't catch any bugs right now.`);
                         }
                     }
                 })
+
+                // spawns a message with a reacting emoji that lasts 15 seconds, first 5 seconds can only be grabbed by the person who spawned
+                // after anyone can try to catch for 10 seconds
+                
             })
-        }) // end serialize
-    } // end run
+        })
+    }
 }
 
-function bugCatching(message, catchDB, infoDB) {
-    // spawns a message with a reacting emoji that lasts 15 seconds, first 5 seconds can only be grabbed by the person who spawned
-    // after anyone can try to catch for 10 seconds
-    infoDB.get(`SELECT name, image FROM bugs WHERE status = 1 ORDER BY RANDOM() LIMIT 1`, [], (err, row) => {
-        if (err) {
-            return console.error(err);
-        }
-
-        if (row === undefined) {
-            console.log(`Something went wrong.`);
-        }
-        else {
-            console.log(row.name);
-            console.log(message.author.id);
-
-            const baseEmbed = new Discord.MessageEmbed()
-                .setColor('BLUE')
-                .setImage(bugImage)
-                ;
-
-            const capturedEmbed = new Discord.MessageEmbed()
-                .setColor('GREEN')
-                .setTitle('CAUGHT')
-                .setImage(bugImage)
-                .setFooter(`${message.author.username} caught a(n) ${bugName.toLowerCase()}!`)
-                ;
-
-            const escapedEmbed = new Discord.MessageEmbed()
-                .setColor('RED')
-                .setImage(bugImage)
-                .setFooter('*It ran away...*')
-                ;
-
-            const filter = (reaction, user) => {
-                return reaction.emoji.name === '⭐' && user.id === message.author.id;
-            };
-
-            message.channel.send(baseEmbed).then(sentEmbed => {
-                // flag for the original user
-                let authorFlag = false;
-
-                sentEmbed.react('⭐');
-
-                const collector = sentEmbed.createReactionCollector(filter, { time: COLLECTIONTIME });
-
-                collector.on('collect', (reaction, user) => {
-                    console.log(`Collected ${reaction.emoji.name} from ${user.tag}`);
-
-                    if (user.id = message.author.id) {
-                        authorFlag = true;
-
-                        try {
-                            collector.stop();
-                            sentEmbed.edit(capturedEmbed);
-                            console.log(`${message.author.tag} (${message.author.id}) caught a ${bugName} in server${message.guild.id}!.`);
-                        }
-                        catch (error) { console.error(error); }
-                    }
-                })
-
-                collector.on('end', collected => {
-                    sentEmbed.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
-
-                    if (authorFlag) {
-                        //console.log(`${message.author.id} reacted to this message.`)
-
-                        catchDB.run(`UPDATE server${message.guild.id} SET '${bugName}' = '${bugName}' + 1 WHERE userID = ?`, [message.author.id], function (err) {
-                            if (err) {
-                                return console.error(err);
-                            }
-                        });
-
-                        catchDB.run(`UPDATE server${message.guild.id} SET lastTime = ? WHERE userID = ?`, [Date.now(), message.author.id], function (err) {
-                            if (err) {
-                                return console.error(err);
-                            }
-                        })
-                    }
-                    else {
-                        try { sentEmbed.edit(escapedEmbed); }
-                        catch (error) { console.error(error); }
-                    }
-                });
-            });
-        }
-    })
+function bugCatching(db) {
+    
 };
 
 function msToMinutesSeconds(millis) {
     var minutes = Math.floor(millis / 60000);
     var seconds = ((millis % 60000) / 1000).toFixed(0);
-
-    if (minutes > 0)
-    {
-        return minutes + ":" + (seconds < 10 ? '0' : '') + seconds + ' minutes';
-    }
-    else {
-        return (seconds < 10 ? '0' : '') + seconds + ' seconds';
-    }
+    return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
 };
