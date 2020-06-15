@@ -218,6 +218,177 @@ function generateDBs() {
         console.log("Fish list inserted.");
     });
 
+    sql = `CREATE TABLE IF NOT EXISTS templateGuildCollection(` +
+        `userID VARCHAR(255) UNIQUE, ` +
+        `lastCatch BIGINT DEFAULT 0, ` +
+        `lastFish BIGINT DEFAULT 0, ` +
+        '`Agrias Butterfly` INT NOT NULL DEFAULT 0, ' +
+        '`Ant` INT NOT NULL DEFAULT 0, ' +
+        '`Atlas Moth` INT NOT NULL DEFAULT 0, ' +
+        '`Bagworm` INT NOT NULL DEFAULT 0, ' +
+        '`Banded Dragonfly` INT NOT NULL DEFAULT 0, ' +
+        '`Bell Cricket` INT NOT NULL DEFAULT 0, ' +
+        '`Blue Weevil Beetle` INT NOT NULL DEFAULT 0, ' +
+        '`Brown Cicada` INT NOT NULL DEFAULT 0, ' +
+        '`Centipede` INT NOT NULL DEFAULT 0, ' +
+        '`Cicada Shell` INT NOT NULL DEFAULT 0, ' +
+        '`Citrus Long-horned Beetle` INT NOT NULL DEFAULT 0, ' +
+        '`Common Bluebottle` INT NOT NULL DEFAULT 0, ' +
+        '`Common Butterfly` INT NOT NULL DEFAULT 0, ' +
+        '`Cricket` INT NOT NULL DEFAULT 0, ' +
+        '`Cyclommatus Stag` INT NOT NULL DEFAULT 0, ' +
+        '`Damselfly` INT NOT NULL DEFAULT 0, ' +
+        '`Darner Dragonfly` INT NOT NULL DEFAULT 0, ' +
+        '`Diving Beetle` INT NOT NULL DEFAULT 0, ' +
+        '`Drone Beetle` INT NOT NULL DEFAULT 0, ' +
+        '`Dung Beetle` INT NOT NULL DEFAULT 0, ' +
+        '`Earth-boring Dung Beetle` INT NOT NULL DEFAULT 0, ' +
+        '`Emperor Butterfly` INT NOT NULL DEFAULT 0, ' +
+        '`Evening Cicada` INT NOT NULL DEFAULT 0, ' +
+        '`Firefly` INT NOT NULL DEFAULT 0, ' +
+        '`Flea` INT NOT NULL DEFAULT 0, ' +
+        '`Fly` INT NOT NULL DEFAULT 0, ' +
+        '`Giant Cicada` INT NOT NULL DEFAULT 0, ' +
+        '`Giant Stag` INT NOT NULL DEFAULT 0, ' +
+        '`Giant Water Bug` INT NOT NULL DEFAULT 0, ' +
+        '`Giraffe Stag` INT NOT NULL DEFAULT 0, ' +
+        '`Golden Stag` INT NOT NULL DEFAULT 0, ' +
+        '`Goliath Beetle` INT NOT NULL DEFAULT 0, ' +
+        '`Grasshopper` INT NOT NULL DEFAULT 0, ' +
+        '`Great Purple Emperor` INT NOT NULL DEFAULT 0, ' +
+        '`Hermit Crab` INT NOT NULL DEFAULT 0, ' +
+        '`Honeybee` INT NOT NULL DEFAULT 0, ' +
+        '`Horned Atlas` INT NOT NULL DEFAULT 0, ' +
+        '`Horned Dynastid` INT NOT NULL DEFAULT 0, ' +
+        '`Horned Elephant` INT NOT NULL DEFAULT 0, ' +
+        '`Horned Hercules` INT NOT NULL DEFAULT 0, ' +
+        '`Jewel Beetle` INT NOT NULL DEFAULT 0, ' +
+        '`Ladybug` INT NOT NULL DEFAULT 0, ' +
+        '`Long Locust` INT NOT NULL DEFAULT 0, ' +
+        '`Madagascan Sunset Moth` INT NOT NULL DEFAULT 0, ' +
+        '`Man-faced Stink Bug` INT NOT NULL DEFAULT 0, ' +
+        '`Mantis` INT NOT NULL DEFAULT 0, ' +
+        '`Migratory Locust` INT NOT NULL DEFAULT 0, ' +
+        '`Miyama Stag` INT NOT NULL DEFAULT 0, ' +
+        '`Mole Cricket` INT NOT NULL DEFAULT 0, ' +
+        '`Monarch Butterfly` INT NOT NULL DEFAULT 0, ' +
+        '`Mosquito` INT NOT NULL DEFAULT 0, ' +
+        '`Moth` INT NOT NULL DEFAULT 0, ' +
+        '`Orchid Mantis` INT NOT NULL DEFAULT 0, ' +
+        '`Paper Kite Butterfly` INT NOT NULL DEFAULT 0, ' +
+        '`Peacock Butterfly` INT NOT NULL DEFAULT 0, ' +
+        '`Pill Bug` INT NOT NULL DEFAULT 0, ' +
+        '`Pondskater` INT NOT NULL DEFAULT 0, ' +
+        '`Queen Alexandra\'s Birdwing` INT NOT NULL DEFAULT 0, ' +
+        '`Rainbow Stag` INT NOT NULL DEFAULT 0, ' +
+        '`Raja Brooke\'s Birdwing` INT NOT NULL DEFAULT 0, ' +
+        '`Red Dragonfly` INT NOT NULL DEFAULT 0, ' +
+        '`Rice Grasshopper` INT NOT NULL DEFAULT 0, ' +
+        '`Robust Cicada` INT NOT NULL DEFAULT 0, ' +
+        '`Rosalia Batesi Beetle` INT NOT NULL DEFAULT 0, ' +
+        '`Saw Stag` INT NOT NULL DEFAULT 0, ' +
+        '`Scarab Beetle` INT NOT NULL DEFAULT 0, ' +
+        '`Scorpion` INT NOT NULL DEFAULT 0, ' +
+        '`Snail` INT NOT NULL DEFAULT 0, ' +
+        '`Spider` INT NOT NULL DEFAULT 0, ' +
+        '`Stinkbug` INT NOT NULL DEFAULT 0, ' +
+        '`Tarantula` INT NOT NULL DEFAULT 0, ' +
+        '`Tiger Beetle` INT NOT NULL DEFAULT 0, ' +
+        '`Tiger Butterfly` INT NOT NULL DEFAULT 0, ' +
+        '`Violin Beetle` INT NOT NULL DEFAULT 0, ' +
+        '`Walker Cicada` INT NOT NULL DEFAULT 0, ' +
+        '`Walking Leaf` INT NOT NULL DEFAULT 0, ' +
+        '`Walking Stick` INT NOT NULL DEFAULT 0, ' +
+        '`Wasp` INT NOT NULL DEFAULT 0, ' +
+        '`Wharf Roach` INT NOT NULL DEFAULT 0, ' +
+        '`Yellow Butterfly` INT NOT NULL DEFAULT 0, ' +
+
+        '`Anchovy` INT NOT NULL DEFAULT 0, ' +
+        '`Angelfish` INT NOT NULL DEFAULT 0, ' +
+        '`Arapaima` INT NOT NULL DEFAULT 0, ' +
+        '`Arowana` INT NOT NULL DEFAULT 0, ' +
+        '`Barred Knifejaw` INT NOT NULL DEFAULT 0, ' +
+        '`Barreleye` INT NOT NULL DEFAULT 0, ' +
+        '`Betta` INT NOT NULL DEFAULT 0, ' +
+        '`Bitterling` INT NOT NULL DEFAULT 0, ' +
+        '`Black Bass` INT NOT NULL DEFAULT 0, ' +
+        '`Blowfish` INT NOT NULL DEFAULT 0, ' +
+        '`Blue Marlin` INT NOT NULL DEFAULT 0, ' +
+        '`Bluegill` INT NOT NULL DEFAULT 0, ' +
+        '`Butterfly Fish` INT NOT NULL DEFAULT 0, ' +
+        '`Carp` INT NOT NULL DEFAULT 0, ' +
+        '`Catfish` INT NOT NULL DEFAULT 0, ' +
+        '`Char` INT NOT NULL DEFAULT 0, ' +
+        '`Cherry Salmon` INT NOT NULL DEFAULT 0, ' +
+        '`Clown Fish` INT NOT NULL DEFAULT 0, ' +
+        '`Coelacanth` INT NOT NULL DEFAULT 0, ' +
+        '`Crawfish` INT NOT NULL DEFAULT 0, ' +
+        '`Crucian Carp` INT NOT NULL DEFAULT 0, ' +
+        '`Dab` INT NOT NULL DEFAULT 0, ' +
+        '`Dace` INT NOT NULL DEFAULT 0, ' +
+        '`Dorado` INT NOT NULL DEFAULT 0, ' +
+        '`Football Fish` INT NOT NULL DEFAULT 0, ' +
+        '`Freshwater Goby` INT NOT NULL DEFAULT 0, ' +
+        '`Frog` INT NOT NULL DEFAULT 0, ' +
+        '`Gar` INT NOT NULL DEFAULT 0, ' +
+        '`Giant Snakehead` INT NOT NULL DEFAULT 0, ' +
+        '`Giant Trevally` INT NOT NULL DEFAULT 0, ' +
+        '`Golden Trout` INT NOT NULL DEFAULT 0, ' +
+        '`Goldfish` INT NOT NULL DEFAULT 0, ' +
+        '`Great White Shark` INT NOT NULL DEFAULT 0, ' +
+        '`Guppy` INT NOT NULL DEFAULT 0, ' +
+        '`Hammerhead Shark` INT NOT NULL DEFAULT 0, ' +
+        '`Horse Mackerel` INT NOT NULL DEFAULT 0, ' +
+        '`Killifish` INT NOT NULL DEFAULT 0, ' +
+        '`King Salmon` INT NOT NULL DEFAULT 0, ' +
+        '`Koi` INT NOT NULL DEFAULT 0, ' +
+        '`Loach` INT NOT NULL DEFAULT 0, ' +
+        '`Mahi-mahi` INT NOT NULL DEFAULT 0, ' +
+        '`Mitten Crab` INT NOT NULL DEFAULT 0, ' +
+        '`Moray Eel` INT NOT NULL DEFAULT 0, ' +
+        '`Napoleonfish` INT NOT NULL DEFAULT 0, ' +
+        '`Neon Tetra` INT NOT NULL DEFAULT 0, ' +
+        '`Nibble Fish` INT NOT NULL DEFAULT 0, ' +
+        '`Oarfish` INT NOT NULL DEFAULT 0, ' +
+        '`Ocean Sunfish` INT NOT NULL DEFAULT 0, ' +
+        '`Olive Flounder` INT NOT NULL DEFAULT 0, ' +
+        '`Pale Chub` INT NOT NULL DEFAULT 0, ' +
+        '`Pike` INT NOT NULL DEFAULT 0, ' +
+        '`Piranha` INT NOT NULL DEFAULT 0, ' +
+        '`Pond Smelt` INT NOT NULL DEFAULT 0, ' +
+        '`Pop-eyed Goldfish` INT NOT NULL DEFAULT 0, ' +
+        '`Puffer Fish` INT NOT NULL DEFAULT 0, ' +
+        '`Rainbowfish` INT NOT NULL DEFAULT 0, ' +
+        '`Ranchu Goldfish` INT NOT NULL DEFAULT 0, ' +
+        '`Ray` INT NOT NULL DEFAULT 0, ' +
+        '`Red Snapper` INT NOT NULL DEFAULT 0, ' +
+        '`Ribbon Eel` INT NOT NULL DEFAULT 0, ' +
+        '`Saddled Bichir` INT NOT NULL DEFAULT 0, ' +
+        '`Salmon` INT NOT NULL DEFAULT 0, ' +
+        '`Saw Shark` INT NOT NULL DEFAULT 0, ' +
+        '`Sea Bass` INT NOT NULL DEFAULT 0, ' +
+        '`Sea Butterfly` INT NOT NULL DEFAULT 0, ' +
+        '`Sea Horse` INT NOT NULL DEFAULT 0, ' +
+        '`Snapping Turtle` INT NOT NULL DEFAULT 0, ' +
+        '`Soft-shelled Turtle` INT NOT NULL DEFAULT 0, ' +
+        '`Squid` INT NOT NULL DEFAULT 0, ' +
+        '`Stringfish` INT NOT NULL DEFAULT 0, ' +
+        '`Sturgeon` INT NOT NULL DEFAULT 0, ' +
+        '`Suckerfish` INT NOT NULL DEFAULT 0, ' +
+        '`Surgeonfish` INT NOT NULL DEFAULT 0, ' +
+        '`Sweetfish` INT NOT NULL DEFAULT 0, ' +
+        '`Tadpole` INT NOT NULL DEFAULT 0, ' +
+        '`Tilapia` INT NOT NULL DEFAULT 0, ' +
+        '`Tuna` INT NOT NULL DEFAULT 0, ' +
+        '`Whale Shark` INT NOT NULL DEFAULT 0, ' +
+        '`Yellow Perch` INT NOT NULL DEFAULT 0, ' +
+        '`Zebra Turkeyfish` INT NOT NULL DEFAULT 0)';
+
+    con.query(sql, function (err, result) {
+        if (err) throw err;
+        console.log("Guild Collection template found.");
+    });
+
     con.end(function (err) {
         if (err) {
             return console.log('error:' + err.message);
