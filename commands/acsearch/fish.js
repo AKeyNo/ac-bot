@@ -8,7 +8,7 @@ module.exports = class FishCommand extends Command {
 			name: 'fish', memberName: 'fish',
 			aliases: ['fishing'],
 			group: 'acsearch',
-			description: 'Nook net tunes.',
+			description: 'Fishing.',
 			throttling: {
 				usages: 1,
 				duration: 10,
