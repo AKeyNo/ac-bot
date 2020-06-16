@@ -24,7 +24,7 @@ function generateDBs() {
         console.log("maindb is present.");
     });
 
-    sql = "CREATE TABLE IF NOT EXISTS bugs(name VARCHAR(255) UNIQUE NOT NULL, price SMALLINT, rarity DECIMAL, status BOOLEAN DEFAULT FALSE, location VARCHAR(255), time VARCHAR(255), months VARCHAR(255), image VARCHAR(255))";
+    sql = "CREATE TABLE IF NOT EXISTS bugs(name VARCHAR(255) UNIQUE NOT NULL, price SMALLINT, rarity DECIMAL(4, 3), status BOOLEAN DEFAULT FALSE, location VARCHAR(255), time VARCHAR(255), months VARCHAR(255), image VARCHAR(255))";
     con.query(sql, function (err, result) {
         if (err) throw err;
         console.log("Bugs table found.");

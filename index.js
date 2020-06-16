@@ -19,7 +19,6 @@ let con = mysql.createConnection({
 con.connect(err => {
     if (err) throw err;
     console.log("Connected to database.");
-    con.query(`SHOW TABLES`, console.log);
 });
 
 // https://discord.com/oauth2/authorize?client_id=693398612339589181&scope=bot
@@ -85,76 +84,55 @@ client.login(token);
 
 // randomizes catches and fish
 function randomizeGames() {
-    let catchArr = [];
-    let fishArr = [];
-
     // minimum and maximum amount of available catches and fish
-    const min = 10;
-    const max = 20;
+    const MIN = 10;
+    const MAX = 20;
 
-    let countCatch = Math.floor(Math.random() * (max - min)) + min;
-    let countFish = Math.floor(Math.random() * (max - min)) + min;
+    let sql = 'UPDATE bugs SET status = 0';
+    con.query(sql, function (err) {
+        if (err) throw err;
+        console.log('Bugs have been reset.');
+    });
+
+    sql = 'UPDATE fish SET status = 0';
+    con.query(sql, function (err) {
+        if (err) throw err;
+        console.log('Fish have been reset.');
+    });
+
+    let countCatch = Math.floor(Math.random() * (MAX - MIN)) + MIN;
+    let countFish = Math.floor(Math.random() * (MAX - MIN)) + MIN;
     console.log(`Types of bugs around: ` + chalk.green(`${countCatch}\n`) +
         `Types of fish around: ` + chalk.green(`${countFish}`));
 
-    // generates an array of random catches
-    while (catchArr.length < countCatch) {
-        // generates a random number from 0 - 79 inclusive
-        let randomNum = Math.floor(Math.random() * 80);
-
-        // checks to see if its in the array, and adds or rolls again
-        if (catchArr.indexOf(allCatches[randomNum]) < 0) {
-            catchArr.push(allCatches[randomNum]);
-            //console.log(randomNum);
-        }
-        catchArr.sort();
-    }
-
-    let infoDB = new sqlite.Database(`./databases/info.db`, sqlite.OPEN_READWRITE, (err) => {
-        if (err) {
-            return console.error(err.message);
-        }
-        console.log(chalk.greenBright('Information database is present.'));
+    // updates bugs that are active
+    sql = `UPDATE bugs SET status = 1 WHERE status = 0 ORDER BY RAND() LIMIT ${countCatch}`;
+    con.query(sql, function (err) {
+        if (err) throw err;
+        console.log('Updated bugs.');
     });
 
-    // resets status of all bugs, then updates bugs that are active
-    infoDB.serialize(() => {
-        infoDB.run(`UPDATE bugs SET status = ? WHERE status = ?`, [0, 1], function (err) {
-            if (err) {
-                return console.error(err.message);
-            }
+    sql = `UPDATE fish SET status = 1 WHERE status = 0 ORDER BY RAND() LIMIT ${countFish}`;
+    con.query(sql, function (err) {
+        if (err) throw err;
+        console.log('Updated fish.');
+    });
+
+    sql = `SELECT name FROM bugs WHERE status = 1`;
+    con.query(sql, function (err, rows) {
+        rows.forEach(function(row) {
+            //console.log(row.name);
         })
-
-        for (var y = 0; y < catchArr.length; y++) {
-            infoDB.run(`UPDATE bugs SET status = ? WHERE name = ?`, [1, catchArr[y]], function (err) {
-                if (err) {
-                    return console.error(err.message);
-                }
-            });
-            // console.log(`${catchArr[y]} is now active.`);
-        }
+        if (err) throw err;
     });
 
-    while (fishArr.length < countFish) {
-        // generates a random number from 0 - 79 inclusive
-        let randomNum = Math.floor(Math.random() * 80);
-
-        // checks to see if its in the array, and adds or rolls again
-        if (fishArr.indexOf(randomNum) < 0) {
-            fishArr.push(randomNum); //******* */
-        }
-    }
-
-    // close the catch database
-    infoDB.close((err) => {
-        if (err) {
-            return console.error(err.message);
-        }
-        console.log(chalk.redBright('Closed the claim database connection.'));
+    sql = `SELECT name FROM fish WHERE status = 1`;
+    con.query(sql, function (err, rows) {
+        rows.forEach(function(row) {
+            //console.log(row.name);
+        })
+        if (err) throw err;
     });
-
-    console.log(catchArr);
-    //console.log(fishArr);
 };
 
 // sets up databases for each guild/server upon entering, MOVE THIS TO ITS OWN JS FILE TO BE RUN ONCE
