@@ -1,10 +1,8 @@
 const Commando = require('discord.js-commando');
-const path = require('path');
-const { prefix, token } = require('./config.json');
-const sqlite = require('sqlite3').verbose();
-const chalk = require('chalk');
-
 const mysql = require('mysql');
+const path = require('path');
+const chalk = require('chalk');
+const { prefix, token } = require('./config.json');
 
 // amount of minutes before the tables get randomized;
 const RANDOMIZERTIMER = 60;
@@ -21,7 +19,7 @@ con.connect(err => {
     console.log("Connected to database.");
 });
 
-// https://discord.com/oauth2/authorize?client_id=693398612339589181&scope=bot
+//  https://discordapp.com/oauth2/authorize?client_id=693398612339589181&scope=bot&permissions=845888
 const client = new Commando.Client({
     commandPrefix: prefix,
     owner: '189985219451944960',
@@ -35,6 +33,7 @@ client.registry
     .registerGroups([
         ['acsearch', 'AC Search'],
         ['general', 'General'],
+        ['dev', 'Developmental']
     ])
     .registerDefaultGroups()
     .registerDefaultCommands({
@@ -74,9 +73,13 @@ client.on('guildMemberAdd', (member) => {
 
 // logs commands for testing purposes
 client.on('message', (message) => {
-    if (message.content.charAt(0) == `!`) {
-        console.log(chalk.cyan(`${message.author.username}`) + `: "${message}"`);
-    }
+    if (!message.content.startsWith(prefix) || message.author.bot) return;
+
+    console.log(chalk.cyan(`${message.author.username}`) + `: "${message}"`);
+    let sql = `INSERT IGNORE INTO serveranimals${message.guild.id}(userID) VALUES(${message.author.id})`;
+    con.query(sql, function (err) {
+        if (err) console.log(err);
+    });
 })
 
 client.on('error', console.error);
@@ -120,7 +123,7 @@ function randomizeGames() {
 
     sql = `SELECT name FROM bugs WHERE status = 1`;
     con.query(sql, function (err, rows) {
-        rows.forEach(function(row) {
+        rows.forEach(function (row) {
             //console.log(row.name);
         })
         if (err) throw err;
@@ -128,7 +131,7 @@ function randomizeGames() {
 
     sql = `SELECT name FROM fish WHERE status = 1`;
     con.query(sql, function (err, rows) {
-        rows.forEach(function(row) {
+        rows.forEach(function (row) {
             //console.log(row.name);
         })
         if (err) throw err;
