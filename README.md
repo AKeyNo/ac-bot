@@ -18,4 +18,6 @@ Discord bot for animal crossing lovers. Features to be added include a gacha sys
 5. To run the bot, head to the main directory in a command prompt and type `node index.js`.
 
 ## To-do
-- Move to mySQL
+- Finish fishing.
+- Finish sailing.
+- ?
