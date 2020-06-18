@@ -1,8 +1,8 @@
 const Discord = require('discord.js');
 const { Command } = require('discord.js-commando');
-const sqlite = require('sqlite3').verbose();
+const mysql = require('mysql');
 
-module.exports = class TunesCommand extends Command {
+module.exports = class TestDBCommand extends Command {
     constructor(client) {
         super(client, {
 			name: 'testdb', memberName: 'testdb',

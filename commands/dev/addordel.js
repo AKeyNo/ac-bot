@@ -2,11 +2,11 @@ const Discord = require('discord.js');
 const { Command } = require('discord.js-commando');
 const mysql = require('mysql');
 
-module.exports = class TunesCommand extends Command {
+module.exports = class AddOrDelCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: 'addordel', memberName: 'addordel',
-			aliases: ['zzz'],
+			aliases: ['aod'],
 			group: 'dev',
 			description: 'Adds to the database.',
 			throttling: {
