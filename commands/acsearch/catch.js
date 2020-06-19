@@ -23,13 +23,9 @@ module.exports = class CatchCommand extends Command {
     constructor(client) {
         super(client, {
             name: 'catch', memberName: 'catch',
-            aliases: ['bug'],
+            aliases: ['bug', 'c'],
             group: 'acsearch',
             description: 'Catch bugs.',
-            throttling: {
-                usages: 1,
-                duration: 10,
-            },
             guildOnly: true,
         });
     }
