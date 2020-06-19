@@ -9,11 +9,12 @@ module.exports = class ResetUserTimeCommand extends Command {
             aliases: ['reset'],
             group: 'acsearch',
             description: 'Tests database stuff.',
+            guildOnly: true,
+            userPermissions: ['ADMINISTRATOR'],
             throttling: {
                 usages: 1,
                 duration: 2,
             },
-            guildOnly: true,
             args: [
                 {
                     key: 'input',

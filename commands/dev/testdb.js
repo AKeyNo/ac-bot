@@ -9,11 +9,12 @@ module.exports = class TestDBCommand extends Command {
 			aliases: ['test'],
 			group: 'acsearch',
 			description: 'Tests database stuff.',
+			guildOnly: true,
+			userPermissions: ['ADMINISTRATOR'],
 			throttling: {
 				usages: 1,
 				duration: 2,
 			},
-			guildOnly: true,
         });
     }
 

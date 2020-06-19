@@ -4,7 +4,7 @@ Discord bot for animal crossing lovers. Features to be added include a gacha sys
 ## Requirements
 - git - https://git-scm.com/download/
 - Node.js 12.0.0 or higher - https://nodejs.org/en/download/
-
+- mySQL - https://www.mysql.com/
 ## Recommended Downloads
 - Visual Studio Code - https://code.visualstudio.com/
 - HeidiSQL - https://www.heidisql.com/download.php

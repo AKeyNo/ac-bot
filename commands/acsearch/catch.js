@@ -60,13 +60,15 @@ module.exports = class CatchCommand extends Command {
                 return spawnMessage(con, message, selectedBug);
             })
             .catch(err => {
+                return console.error(err);
+            })
+            .then(() => {
                 con.end(function (err) {
                     if (err) {
                         return console.log('error:' + err.message);
                     }
                     console.log('Closed the database connection.');
                 });
-                return console.error(err);
             });
     }
 }

@@ -9,11 +9,12 @@ module.exports = class AddOrDelCommand extends Command {
 			aliases: ['aod'],
 			group: 'dev',
 			description: 'Adds to the database.',
+			guildOnly: true,
+			userPermissions: ['ADMINISTRATOR'],
 			throttling: {
 				usages: 1,
 				duration: 10,
 			},
-			guildOnly: true,
 			args: [
 				{
 					key: 'word',
