@@ -3,9 +3,14 @@ const mysql = require('mysql');
 const path = require('path');
 const chalk = require('chalk');
 const { prefix, token } = require('./config.json');
+const cron = require('cron');
 
-// amount of minutes before the tables get randomized;
-const RANDOMIZERTIMER = 60;
+
+// makes randomizeGames occur at the top of every hour
+const hourlyJob = new cron.CronJob('0 0 * * * *', () => {
+    randomizeGames();
+    console.log(chalk.magenta('\nGames have been randomized'));
+});
 
 let con = mysql.createConnection({
     host: "localhost",
@@ -47,13 +52,8 @@ client.once('ready', () => {
         chalk.yellowBright(`Isabelle`) + ` arrived at Residential Services!\n` +
         `She arrived at ` + chalk.blue(`${loginTime.toString()}` + `.\n`));
     client.user.setActivity('!help for commands');
+    hourlyJob.start();
 });
-
-// randomizes the tables after every hour
-client.setInterval(function () {
-    randomizeGames();
-    console.log(chalk.magenta('\nGames have been randomized'));
-}, RANDOMIZERTIMER * 60000);
 
 // when the bot joins a guild or server
 client.on('guildCreate', (guild) => {
@@ -146,4 +146,4 @@ function setGuildDBs(guild) {
         if (err) throw err;
         console.log(`A database for ${guild.id} is present.`);
     });
-}
+};
