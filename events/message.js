@@ -1,6 +1,6 @@
 const chalk = require('chalk');
 const mysql = require('mysql');
-const { prefix } = require('../config.json');
+const { prefix } = require('../config/config.json');
 
 module.exports = (client, message) => {
     if (!message.content.startsWith(prefix) || message.author.bot) return;

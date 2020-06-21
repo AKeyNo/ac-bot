@@ -1,7 +1,7 @@
 const Commando = require('discord.js-commando');
 const fs = require(`fs`)
 const path = require('path');
-const { prefix, token } = require('./config.json');
+const { prefix, token } = require('./config/config.json');
 
 //  https://discordapp.com/oauth2/authorize?client_id=693398612339589181&scope=bot&permissions=845888
 const client = new Commando.Client({
