@@ -1,7 +1,6 @@
 // dbsetup.js
 // Run this before starting the bot to set up all the databases.
 // This only has to be ran one time.
-
 const mysql = require('mysql');
 
 let con = mysql.createConnection({
@@ -34,6 +33,12 @@ function generateDBs() {
     con.query(sql, function (err, result) {
         if (err) throw err;
         console.log("Fish table found.");
+    });
+
+    sql = "CREATE TABLE IF NOT EXISTS guildSettings(guildID VARCHAR(255) UNIQUE NOT NULL, collectionInterval TINYINT DEFAULT 10, catchInterval SMALLINT DEFAULT 60, fishInterval SMALLINT DEFAULT 60, sailTimer SMALLINT DEFAULT 24)";
+    con.query(sql, function (err, result) {
+        if (err) throw err;
+        console.log("Guild table found.");
     });
 
     sql = "INSERT IGNORE INTO bugs(name, price, rarity, status, location, time, months, image) VALUES ?";

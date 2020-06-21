@@ -141,9 +141,18 @@ function randomizeGames() {
 // sets up databases for each guild/server upon entering, MOVE THIS TO ITS OWN JS FILE TO BE RUN ONCE
 function setGuildDBs(guild) {
     let sql = `CREATE TABLE IF NOT EXISTS serverAnimals${guild.id} LIKE templateGuildCollection`;
-
-    con.query(sql, function (err, result) {
+    con.query(sql, function (err) {
         if (err) throw err;
         console.log(`A database for ${guild.id} is present.`);
     });
+
+    sql = `INSERT IGNORE INTO guildsettings(guildID) VALUES (${guild.id})`;
+    con.query(sql, (err) => {
+        if (err) {
+            return console.error(err.message);
+        }
+        console.log(`A row has been found for ${guild.id}'s guild settings.`);
+    });
+
+    
 };
