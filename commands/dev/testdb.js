@@ -30,14 +30,6 @@ module.exports = class TestDBCommand extends Command {
 			if (err) throw err;
 			console.log("Connected to database.");
 		});
-
-		let sql = `INSERT IGNORE INTO guildsettings(guildID) VALUES (${message.guild.id})`;
-		con.query(sql, (err) => {
-			if (err) {
-				return console.error(err.message);
-			}
-			console.log(`A row has been found for ${message.guild.id}'s guild settings.`);
-		});
 	
 		return message.say('Nothing to test right now.');
 	}		
