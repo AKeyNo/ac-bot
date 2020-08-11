@@ -14,7 +14,7 @@ module.exports = class TimerCommand extends Command {
     constructor(client) {
         super(client, {
             name: 'timer', memberName: 'timer',
-            aliases: ['t'],
+            aliases: ['time'],
             group: 'acsearch',
             description: 'Tests database stuff.',
             guildOnly: true,
