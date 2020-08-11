@@ -16,7 +16,7 @@ con.connect(err => {
     generateDBs();
 });
 
-function generateDBs() {
+const generateDBs = () => {
     let sql = "CREATE DATABASE IF NOT EXISTS acdb";
     con.query(sql, function (err, result) {
         if (err) throw err;

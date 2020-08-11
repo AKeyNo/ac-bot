@@ -83,7 +83,7 @@ module.exports = class FishCommand extends Command {
  * Parameters: con: connection to the database, message: original message
  * Return: Returns lastFish for the author using promises.
  */
-function checkTime(con, message) {
+const checkTime = (con, message) => {
     return new Promise((resolve, reject) => {
         let sql = `SELECT lastFish from serveranimals${message.guild.id} WHERE userID = ${message.author.id}`;
         con.query(sql, (error, results) => {
@@ -98,7 +98,7 @@ function checkTime(con, message) {
  * Parameters: con: connection to the database
  * Return: Returns a row of the selected fish using promises.
  */
-function pickRandom(con) {
+const pickRandom = (con) => {
     return new Promise((resolve, reject) => {
         let sql = `SELECT * from fish WHERE status = 1 ORDER BY price ASC`;
         let x = 0;
@@ -149,7 +149,7 @@ function pickRandom(con) {
  * Parameters: con: connection to the database, message: original message, selectedFish: row of the fish given
  * Return: N/A
  */
-function spawnMessage(con, message, selectedFish) {
+const spawnMessage = (con, message, selectedFish) => {
     return new Promise((resolve, reject) => {
         // embed for when it spawns
         const baseEmbed = new Discord.MessageEmbed()
@@ -249,7 +249,7 @@ function spawnMessage(con, message, selectedFish) {
  * Parameters: millis: milliseconds
  * Return: MINUTES:SECONDS in a string format.
  */
-function msToMinutesSeconds(millis) {
+const msToMinutesSeconds = (millis) => {
     var minutes = Math.floor(millis / 60000);
     var seconds = ((millis % 60000) / 1000).toFixed(0);
 

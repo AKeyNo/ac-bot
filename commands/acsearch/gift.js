@@ -24,7 +24,7 @@ module.exports = class GiftCommand extends Command {
 
 }
 
-function connectDB() {
+const connectDB = () => {
 	let con = mysql.createConnection({
 		host: "localhost",
 		user: "root",

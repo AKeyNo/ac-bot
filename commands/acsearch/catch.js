@@ -10,9 +10,9 @@
 //      b.) If the author reacts under the allowed time, add this to their total amount of caught for the bug and update their lastCatch.
 //      c.) If the author does nothing within the allowed time, the bug runs away.
 
-const Discord = require('discord.js');
-const { Command } = require('discord.js-commando');
-const mysql = require('mysql');
+const Discord = require("discord.js");
+const { Command } = require("discord.js-commando");
+const mysql = require("mysql");
 
 // 1 hour since last catch
 const TIMEINTERVAL = 3600000;
@@ -20,72 +20,77 @@ const TIMEINTERVAL = 3600000;
 const COLLECTIONTIME = 10000;
 
 module.exports = class CatchCommand extends Command {
-    constructor(client) {
-        super(client, {
-            name: 'catch', memberName: 'catch',
-            aliases: ['bug', 'c'],
-            group: 'acsearch',
-            description: 'Catch bugs.',
-            guildOnly: true,
-        });
-    }
+  constructor(client) {
+    super(client, {
+      name: "catch",
+      memberName: "catch",
+      aliases: ["bug", "c"],
+      group: "acsearch",
+      description: "Catch bugs.",
+      guildOnly: true,
+    });
+  }
 
-    run(message) {
-        // initialize db
-        let con = mysql.createConnection({
-            host: "localhost",
-            user: "root",
-            password: "",
-            database: "acdb",
-        });
+  run(message) {
+    // initialize db
+    let con = mysql.createConnection({
+      host: "localhost",
+      user: "root",
+      password: "",
+      database: "acdb",
+    });
 
-        con.connect(err => {
-            if (err) return console.error(err);
-            console.log("Connected to database.");
-        });
+    con.connect((err) => {
+      if (err) return console.error(err);
+      console.log("Connected to database.");
+    });
 
-        checkTime(con, message)
-            .then(results => {
-                //console.log(results[0].lastCatch);
-                let currentTime = new Date();
-                if ((results[0].lastCatch + TIMEINTERVAL) > currentTime.getTime()) {
-                    message.reply(`you can't look for bugs right now. You can look for them in ${msToMinutesSeconds((results[0].lastCatch + TIMEINTERVAL) - currentTime.getTime())}.`);
-                    throw `${message.author.tag} (${message.author.id}) can\'t look for bugs right now.`
-                }
-                return pickRandom(con);
-            })
-            .then(results => {
-                let selectedBug = results;
-                console.log(selectedBug[0].name + ' was selected.');
-                return spawnMessage(con, message, selectedBug);
-            })
-            .catch(err => {
-                return console.error(err);
-            })
-            .then(() => {
-                con.end(function (err) {
-                    if (err) {
-                        return console.log('error:' + err.message);
-                    }
-                    console.log('Closed the database connection.');
-                });
-            });
-    }
-}
+    checkTime(con, message)
+      .then((results) => {
+        //console.log(results[0].lastCatch);
+        let currentTime = new Date();
+        if (results[0].lastCatch + TIMEINTERVAL > currentTime.getTime()) {
+          message.reply(
+            `you can't look for bugs right now. You can look for them in ${msToMinutesSeconds(
+              results[0].lastCatch + TIMEINTERVAL - currentTime.getTime()
+            )}.`
+          );
+          throw `${message.author.tag} (${message.author.id}) can\'t look for bugs right now.`;
+        }
+        return pickRandom(con);
+      })
+      .then((results) => {
+        let selectedBug = results;
+        console.log(selectedBug[0].name + " was selected.");
+        return spawnMessage(con, message, selectedBug);
+      })
+      .catch((err) => {
+        return console.error(err);
+      })
+      .then(() => {
+        con.end(function (err) {
+          if (err) {
+            return console.log("error:" + err.message);
+          }
+          console.log("Closed the database connection.");
+        });
+      });
+  }
+};
 
 /**
  * Description: Grabs author's last time they did !catch.
  * Parameters: con: connection to the database, message: original message
  * Return: Returns lastCatch for the author using promises.
  */
-function checkTime(con, message) {
-    return new Promise((resolve, reject) => {
-        let sql = `SELECT lastCatch from serveranimals${message.guild.id} WHERE userID = ${message.author.id}`;
-        con.query(sql, (error, results) => {
-            if (error) return reject(error);
-            return resolve(results);
-        })
+const checkTime = (con, message) => {
+  return new Promise((resolve, reject) => {
+    let sql = `SELECT lastCatch from serveranimals${message.guild.id} WHERE userID = ${message.author.id}`;
+    con.query(sql, (error, results) => {
+      if (error) return reject(error);
+      return resolve(results);
     });
+  });
 };
 
 /**
@@ -93,32 +98,31 @@ function checkTime(con, message) {
  * Parameters: con: connection to the database
  * Return: Returns a row of the selected bug using promises.
  */
-function pickRandom(con) {
-    return new Promise((resolve, reject) => {
-        let sql = `SELECT * from bugs WHERE status = 1 ORDER BY RAND()`;
-        let x = 0;
-        con.query(sql, (error, results) => {
-            if (error) return reject(error);
-            // console.log(results);
+const pickRandom = (con) => {
+  return new Promise((resolve, reject) => {
+    let sql = `SELECT * from bugs WHERE status = 1 ORDER BY RAND()`;
+    let x = 0;
+    con.query(sql, (error, results) => {
+      if (error) return reject(error);
+      // console.log(results);
 
-            // Using the algorithm of generating a random integer between 1-100 inclusive
-            // and checking to see if it is <= (the bug's rarity * 100).
-            // Retry if failed with the next bug.
-            while (true) {
-                let roll = Math.floor(Math.random() * (100 - 1)) + 1;
-                console.log(`${roll} compare to ${results[x].rarity * 100}`);
-                if (roll <= results[x].rarity * 100) {
-                    console.log('Roll was successful.');
-                    return resolve(results);
-                }
-                else {
-                    x = (x + 1) % (results.length + 1);
-                    console.log((x + 1) % (results.length + 1));
-                    console.log('Roll was unsuccessful. Rolling again.');
-                }
-            }
-        })
+      // Using the algorithm of generating a random integer between 1-100 inclusive
+      // and checking to see if it is <= (the bug's rarity * 100).
+      // Retry if failed with the next bug.
+      while (true) {
+        let roll = Math.floor(Math.random() * (100 - 1)) + 1;
+        console.log(`${roll} compare to ${results[x].rarity * 100}`);
+        if (roll <= results[x].rarity * 100) {
+          console.log("Roll was successful.");
+          return resolve(results);
+        } else {
+          x = (x + 1) % (results.length + 1);
+          console.log((x + 1) % (results.length + 1));
+          console.log("Roll was unsuccessful. Rolling again.");
+        }
+      }
     });
+  });
 };
 
 /**
@@ -126,114 +130,124 @@ function pickRandom(con) {
  * Parameters: con: connection to the database, message: original message, selectedBug: row of the bug given
  * Return: N/A
  */
-function spawnMessage(con, message, selectedBug) {
-    return new Promise((resolve, reject) => {
-        // embed for when it spawns
-        const baseEmbed = new Discord.MessageEmbed()
-            .setColor('BLUE')
-            .setImage(selectedBug[0].image)
-            ;
+const spawnMessage = (con, message, selectedBug) => {
+  return new Promise((resolve, reject) => {
+    // embed for when it spawns
+    const baseEmbed = new Discord.MessageEmbed()
+      .setColor("BLUE")
+      .setImage(selectedBug[0].image);
+    // embed if caught by the author
+    const capturedEmbed = new Discord.MessageEmbed()
+      .setColor("GREEN")
+      .setTitle("CAUGHT")
+      .setImage(selectedBug[0].image)
+      .setFooter(
+        `${
+          message.author.username
+        } caught a(n) ${selectedBug[0].name.toLowerCase()}!`
+      );
+    // embed if the bug wasn't caught
+    const escapedEmbed = new Discord.MessageEmbed()
+      .setColor("RED")
+      .setImage(selectedBug[0].image)
+      .setFooter("*It ran away...*");
+    const filter = (reaction, user) => {
+      return reaction.emoji.name === "⭐" && user.id === message.author.id;
+    };
 
-        // embed if caught by the author
-        const capturedEmbed = new Discord.MessageEmbed()
-            .setColor('GREEN')
-            .setTitle('CAUGHT')
-            .setImage(selectedBug[0].image)
-            .setFooter(`${message.author.username} caught a(n) ${selectedBug[0].name.toLowerCase()}!`)
-            ;
+    // spawns the baseEmbed
+    // -> if caught, edit embed to capturedEmbed
+    // -> if not caught, edit embed to escapedEmbed
+    message.channel.send(baseEmbed).then((sentEmbed) => {
+      // flag for the original user
+      let authorFlag = false;
 
-        // embed if the bug wasn't caught
-        const escapedEmbed = new Discord.MessageEmbed()
-            .setColor('RED')
-            .setImage(selectedBug[0].image)
-            .setFooter('*It ran away...*')
-            ;
+      sentEmbed.react("⭐");
+      const collector = sentEmbed.createReactionCollector(filter, {
+        time: COLLECTIONTIME,
+      });
 
-        const filter = (reaction, user) => {
-            return reaction.emoji.name === '⭐' && user.id === message.author.id;
-        };
+      // check reactions for the author
+      collector.on("collect", (reaction, user) => {
+        console.log(`Collected ${reaction.emoji.name} from ${user.tag}`);
 
-        // spawns the baseEmbed
-        // -> if caught, edit embed to capturedEmbed
-        // -> if not caught, edit embed to escapedEmbed
-        message.channel.send(baseEmbed).then(sentEmbed => {
-            // flag for the original user
-            let authorFlag = false;
+        if ((user.id = message.author.id)) {
+          authorFlag = true;
 
-            sentEmbed.react('⭐');
-            const collector = sentEmbed.createReactionCollector(filter, { time: COLLECTIONTIME });
+          try {
+            collector.stop();
+            sentEmbed.edit(capturedEmbed);
+            console.log(
+              `${message.author.tag} (${message.author.id}) caught a ${selectedBug[0].name} in server${message.guild.id}!.`
+            );
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      });
 
-            // check reactions for the author
-            collector.on('collect', (reaction, user) => {
-                console.log(`Collected ${reaction.emoji.name} from ${user.tag}`);
+      // end reaction collector if time runs out or the author catches the bug
+      collector.on("end", (collected) => {
+        sentEmbed.reactions
+          .removeAll()
+          .catch((error) =>
+            console.error("Failed to clear reactions: ", error)
+          );
 
-                if (user.id = message.author.id) {
-                    authorFlag = true;
+        if (authorFlag) {
+          console.log(`${message.author.id} reacted to this message.`);
 
-                    try {
-                        collector.stop();
-                        sentEmbed.edit(capturedEmbed);
-                        console.log(`${message.author.tag} (${message.author.id}) caught a ${selectedBug[0].name} in server${message.guild.id}!.`);
-                    }
-                    catch (error) { console.error(error); }
-                }
-            });
+          // update author's bug count for the bug
+          let sql = `UPDATE serveranimals${message.guild.id} SET \`${selectedBug[0].name}\` = \`${selectedBug[0].name}\` + 1 WHERE userID = ${message.author.id}`;
+          con.query(sql, (error, results, fields) => {
+            if (error) {
+              return console.error(error.message);
+            }
+            console.log(`Updated ${message.author.id}'s count.`);
+          });
 
-            // end reaction collector if time runs out or the author catches the bug
-            collector.on('end', collected => {
-                sentEmbed.reactions.removeAll().catch(error => console.error('Failed to clear reactions: ', error));
+          // update author's lastCatch to the current time in ms
+          sql = `UPDATE serveranimals${
+            message.guild.id
+          } SET lastCatch = ${Date.now()} WHERE userID = ${message.author.id}`;
+          con.query(sql, (error, results, fields) => {
+            if (error) {
+              return console.error(error.message);
+            }
+            console.log(`Updated ${message.author.id}'s lastCatch.`);
+          });
 
-                if (authorFlag) {
-                    console.log(`${message.author.id} reacted to this message.`);
-
-                    // update author's bug count for the bug
-                    let sql = `UPDATE serveranimals${message.guild.id} SET \`${selectedBug[0].name}\` = \`${selectedBug[0].name}\` + 1 WHERE userID = ${message.author.id}`;
-                    con.query(sql, (error, results, fields) => {
-                        if (error) {
-                            return console.error(error.message);
-                        }
-                        console.log(`Updated ${message.author.id}'s count.`);
-                    });
-
-                    // update author's lastCatch to the current time in ms
-                    sql = `UPDATE serveranimals${message.guild.id} SET lastCatch = ${Date.now()} WHERE userID = ${message.author.id}`;
-                    con.query(sql, (error, results, fields) => {
-                        if (error) {
-                            return console.error(error.message);
-                        }
-                        console.log(`Updated ${message.author.id}'s lastCatch.`);
-                    });
-
-                    con.end(function (err) {
-                        if (err) {
-                            return console.log('error:' + err.message);
-                        }
-                        console.log('Closed the database connection.');
-                    });
-                }
-                else {
-                    // updates embed to escapedEmbed if the bug runs away
-                    try { sentEmbed.edit(escapedEmbed); }
-                    catch (error) { console.error(error); }
-                }
-            })
-        })
+          con.end(function (err) {
+            if (err) {
+              return console.log("error:" + err.message);
+            }
+            console.log("Closed the database connection.");
+          });
+        } else {
+          // updates embed to escapedEmbed if the bug runs away
+          try {
+            sentEmbed.edit(escapedEmbed);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      });
     });
-}
+  });
+};
 
 /**
  * Description: Creates a readable time amount given milliseconds.
  * Parameters: millis: milliseconds
  * Return: MINUTES:SECONDS in a string format.
  */
-function msToMinutesSeconds(millis) {
-    var minutes = Math.floor(millis / 60000);
-    var seconds = ((millis % 60000) / 1000).toFixed(0);
+const msToMinutesSeconds = (millis) => {
+  var minutes = Math.floor(millis / 60000);
+  var seconds = ((millis % 60000) / 1000).toFixed(0);
 
-    if (minutes > 0) {
-        return minutes + ":" + (seconds < 10 ? '0' : '') + seconds + ' minutes';
-    }
-    else {
-        return (seconds < 10 ? '0' : '') + seconds + ' seconds';
-    }
+  if (minutes > 0) {
+    return minutes + ":" + (seconds < 10 ? "0" : "") + seconds + " minutes";
+  } else {
+    return (seconds < 10 ? "0" : "") + seconds + " seconds";
+  }
 };

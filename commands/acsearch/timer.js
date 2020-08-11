@@ -67,7 +67,7 @@ module.exports = class TimerCommand extends Command {
  * Parameters: con: connection to the database, message: original message
  * Return: Returns a string if they can catch bugs.
  */
-function checkCatch(con, message) {
+const checkCatch = (con, message) => {
     return new Promise((resolve, reject) => {
         let currentTime = new Date();
         let sql = `SELECT lastCatch from serveranimals${message.guild.id} WHERE userID = ${message.author.id}`;
@@ -90,7 +90,7 @@ function checkCatch(con, message) {
  * Parameters: con: connection to the database, message: original message
  * Return: Returns a string if they can catch fish.
  */
-function checkFish(con, message) {
+const checkFish = (con, message) => {
     return new Promise((resolve, reject) => {
         let currentTime = new Date();
         let sql = `SELECT lastFish from serveranimals${message.guild.id} WHERE userID = ${message.author.id}`;
@@ -113,7 +113,7 @@ function checkFish(con, message) {
  * Parameters: millis: milliseconds
  * Return: MINUTES:SECONDS in a string format.
  */
-function msToMinutesSeconds(millis) {
+const msToMinutesSeconds = (millis) => {
     var minutes = Math.floor(millis / 60000);
     var seconds = ((millis % 60000) / 1000).toFixed(0);
 

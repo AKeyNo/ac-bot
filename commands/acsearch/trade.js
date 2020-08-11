@@ -54,7 +54,7 @@ module.exports = class TradeCommand extends Command {
 	}
 }
 
-function checkUser(message, con, targetUser) {
+const checkUser = (message, con, targetUser) => {
 	return new Promise((resolve, reject) => {
 		let sql = `SELECT * FROM serveranimals${message.guild.id} WHERE userID = ${targetUser}`;
 		con.query(sql, (error, rows) => {
@@ -64,7 +64,7 @@ function checkUser(message, con, targetUser) {
 	});
 };
 
-async function getItem(message, con, targetUser) {
+const getItem = (message, con, targetUser) => {
 	return new Promise((resolve, reject) => {
 		message.reply('what would you like to trade? format bugfishorvillager#amount separated by commas for multiple');
 
@@ -82,7 +82,7 @@ async function getItem(message, con, targetUser) {
 	});
 }
 
-async function validateItem(message, con, targetUser) {
+const validateItem = (message, con, targetUser) => {
 	return new Promise((resolve, reject) => {
 		item = checkType(message, con, targetUser);
 		console.log("what?");
