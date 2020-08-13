@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const mysql = require('mysql');
+const connection = require("../database/connection");
 const { prefix } = require('../config/config.json');
 
 module.exports = (client, message) => {
@@ -10,17 +10,8 @@ module.exports = (client, message) => {
 }
 
 function checkUser(message) {
-    let con = mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "",
-        database: "acdb",
-    });
+    let con = connection.setupConnection();
 
-    con.connect(err => {
-        if (err) throw err;
-        console.log("Connected to database.");
-    });
     console.log(chalk.cyan(`${message.author.username}`) + `: "${message}"`);
     let sql = `INSERT IGNORE INTO serveranimals${message.guild.id}(userID) VALUES(${message.author.id})`;
     con.query(sql, function (err) {

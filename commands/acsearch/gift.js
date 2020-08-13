@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const { Command } = require('discord.js-commando');
-const mysql = require('mysql');
+const connection = require("../../database/connection");
 
 module.exports = class GiftCommand extends Command {
     constructor(client) {
@@ -18,24 +18,8 @@ module.exports = class GiftCommand extends Command {
     }
 
     run(message, args) {
-		let con = connectDB();
+		let con = connection.setupConnection();
 	
 	}		
 
-}
-
-const connectDB = () => {
-	let con = mysql.createConnection({
-		host: "localhost",
-		user: "root",
-		password: "",
-		database: "acdb",
-	});
-
-	con.connect(err => {
-		if (err) throw err;
-		console.log("Connected to database.");
-	});
-
-	return con;
 }

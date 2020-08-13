@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const { Command } = require('discord.js-commando');
+const connection = require("../../database/connection");
 
 module.exports = class SailCommand extends Command {
     constructor(client) {

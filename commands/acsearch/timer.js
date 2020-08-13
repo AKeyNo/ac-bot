@@ -5,7 +5,7 @@
 
 const Discord = require('discord.js');
 const { Command } = require('discord.js-commando');
-const mysql = require('mysql');
+const connection = require("../../database/connection");
 
 // 1 hour since last catch
 const TIMEINTERVAL = 3600000;
@@ -26,18 +26,8 @@ module.exports = class TimerCommand extends Command {
     }
 
     run(message) {
-        let con = mysql.createConnection({
-            host: "localhost",
-            user: "root",
-            password: "",
-            database: "acdb",
-        });
-
-        con.connect(err => {
-            if (err) throw err;
-            console.log("Connected to database.");
-        });
-
+        let con = connection.setupConnection();
+        
         let timeText = 'here is a list of your timers:\n';
         checkCatch(con, message)
             .then(results => {

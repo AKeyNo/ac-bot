@@ -17,7 +17,7 @@
 
 const Discord = require('discord.js');
 const { Command } = require('discord.js-commando');
-const mysql = require('mysql');
+const connection = require("../../database/connection");
 
 // 1 hour since last fished
 const TIMEINTERVAL = 3600000;
@@ -37,17 +37,7 @@ module.exports = class FishCommand extends Command {
 
     run(message) {
         // initialize db
-        let con = mysql.createConnection({
-            host: "localhost",
-            user: "root",
-            password: "",
-            database: "acdb",
-        });
-
-        con.connect(err => {
-            if (err) return console.error(err);
-            console.log("Connected to database.");
-        });
+        let con = connection.setupConnection();
 
         checkTime(con, message)
             .then(results => {

@@ -1,6 +1,6 @@
 const cron = require('cron');
 const chalk = require('chalk');
-const mysql = require('mysql');
+const connection = require("../database/connection");
 
 // makes randomizeGames occur at the top of every hour
 const hourlyJob = new cron.CronJob('0 0 * * * *', () => {
@@ -19,17 +19,7 @@ module.exports = client => {
 
 // randomizes catches and fish
 function randomizeGames() {
-    let con = mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "",
-        database: "acdb",
-    });
-    
-    con.connect(err => {
-        if (err) throw err;
-        console.log("Connected to database.");
-    });
+    let con = connection.setupConnection();
 
     // minimum and maximum amount of available catches and fish
     const MIN = 10;

@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const { Command } = require('discord.js-commando');
-const mysql = require('mysql');
+const connection = require("../../database/connection");
 
 module.exports = class AddOrDelCommand extends Command {
 	constructor(client) {
@@ -27,17 +27,7 @@ module.exports = class AddOrDelCommand extends Command {
 	}
 
 	run(message, { word }) {
-		let con = mysql.createConnection({
-			host: "localhost",
-			user: "root",
-			password: "",
-			database: "acdb",
-		});
-
-		con.connect(err => {
-			if (err) throw err;
-			console.log("Connected to database.");
-		});
+		let con = connection.setupConnection();
 
 		if (word == 'add') {
 			let sql = `INSERT IGNORE INTO serverAnimals${message.guild.id}(userID) VALUES(?)`;

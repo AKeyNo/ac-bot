@@ -1,18 +1,8 @@
-const mysql = require('mysql');
+const connection = require("../database/connection");
 
 // when the bot joins a guild or server
 module.exports = (client, guild) => {
-    let con = mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "",
-        database: "acdb",
-    });
-
-    con.connect(err => {
-        if (err) throw err;
-        console.log("Connected to database.");
-    });
+    let con = connection.setupConnection();
     
     setGuildDBs(con, guild);
 }

@@ -1,6 +1,6 @@
 const Discord = require('discord.js');
 const { Command } = require('discord.js-commando');
-const mysql = require('mysql');
+const connection = require("../../database/connection");
 
 module.exports = class ResetUserTimeCommand extends Command {
     constructor(client) {
@@ -59,17 +59,7 @@ module.exports = class ResetUserTimeCommand extends Command {
 function resetTime(sql) {
     return new Promise((resolve, reject) => {
         // initialize db
-        let con = mysql.createConnection({
-            host: "localhost",
-            user: "root",
-            password: "",
-            database: "acdb",
-        });
-
-        con.connect(err => {
-            if (err) return console.error(err);
-            console.log("Connected to database.");
-        });
+        let con = connection.setupConnection();
 
         con.query(sql, (error, results) => {
             if (error) return reject(error);
